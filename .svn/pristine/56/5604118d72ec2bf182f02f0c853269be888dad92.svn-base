@@ -1,0 +1,115 @@
+<?php
+	include('../classes/incidentController.php'); //to get relevant incident details for the msg
+	include('../classes/dispatchController.php'); //to create db record
+
+	if(isset($_POST['btn_submit'])){ //if this page is a result of clicking the submit button
+		
+		$incidentId = $_POST['incidentId'];
+		$incidentController = new incidentController();
+		$result = $incidentController->getSpecificIncident($incidentId);
+
+		$name = $result->getName();
+		$mobileNo = $result->getMobileNo();
+		$location = $result->getLocation();
+		
+		$emergencyType = $_POST['emergencyType'];
+		$assistanceType = $_POST['assistanceType'];
+		$remarks = $_POST['remarks'];
+		
+		$fileDateTime = $result->getFileDateTime();
+		$filedBy = $result->getCcoUsername();
+
+		session_start();
+		$cmo_username = $_SESSION['username'];
+		
+		$scdf = $_POST['scdf'];
+		$spf = $_POST['spf'];
+		$sof = $_POST['sof'];
+		$_995 = $_POST['995'];
+		$sp = $_POST['sp'];
+
+		$dispatchUnit = "";
+		$i = 0;
+		if($scdf == 'checked'){
+			$dispatchUnit .= "SCDF";
+			$i++;
+		}
+		if($spf == 'checked'){
+			if($i > 0){
+				$dispatchUnit .= ", SPF";
+			}
+			else{
+				$dispatchUnit .= "SPF";
+			}
+			$i++;
+		}
+		if($sof == 'checked'){
+			if($i > 0){
+				$dispatchUnit .= ", SOF";
+			}
+			else{
+				$dispatchUnit .= "SOF";
+			}
+			$i++;
+		}
+		if($_995 == 'checked'){
+			if($i > 0){
+				$dispatchUnit .= ", 995";
+			}
+			else{
+				$dispatchUnit .= "995";
+			}
+			$i++;
+		}
+		if($sp == 'checked'){
+			if($i > 0){
+				$dispatchUnit .= ", Singapore Power";
+			}
+			else{
+				$dispatchUnit .= "Singapore Power";
+			}
+			$i++;
+		}
+
+
+		/* Wei Hao's code
+
+		$botToken = "886234058:AAGpO0Xd6oy81EMGZFjsWjB-F-3HzOegtk4";
+		$website = "https://api.telegram.org/bot".$botToken;
+	
+		$update = file_get_contents($website."/getupdates");
+	
+		$updateArray = json_decode($update, TRUE);
+	
+		$chatId = $updateArray["result"][0]["message"]["chat"]["id"];
+	
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=!!!Emergency!!!");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Incident ID:001, Incident Type: Fire");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Incident Date and Time: 28/02/2019, 1400hrs");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Location: North Spine at NTU, S(666666)");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Dispatch Units: SCDF and SPF");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Remarks: Witness - Tan Ah Kau (9999999) Witnesses spotted fire burning down NTU.");
+		*/
+
+
+		//initialize dispatchMsg to store in db
+		$dispatchMsg = "incidentId=".$incidentId."&mobileNo=".$mobileNo."&location=".$location."&emergencyType=".$emergencyType."&assistanceType=".$assistanceType."&remarks=".$remarks."&fileDateTime=".$fileDateTime."&filedBy=".$filedBy."dispatchUnit=".$dispatchUnit;
+
+		//insert into db
+		$dispatch = new dispatch();
+		$dispatch->setCmoUsername($cmo_username);
+		$dispatch->setIncidentId($incidentId);
+		$dispatch->setDispatchMsg($dispatchMsg);
+
+		$dispatchController = new dispatchController();
+		$result = $dispatchController->insertDetails($dispatch); //pass dispatch obj
+		if($result == 'success'){
+			header("Location:../cmo/cmo_send_sms_view_all.php?result=success");	
+			exit();
+		}
+	}
+	else{
+		header("Location: cmo_send_sms_view_all.php");
+		exit();
+	}
+?>

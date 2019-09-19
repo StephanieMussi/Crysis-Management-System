@@ -1,0 +1,155 @@
+<?php
+    include('cmo_severeCase.php');
+	class cmo_severeCaseController { 
+    	//other methods
+    	public function getSpecificSevereCase($incidentId){
+    		include('../script/cmo_dbh.php');
+            //query to get all incidents
+            $sql = "SELECT * FROM severeCase WHERE incidentId=?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $incidentId);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            $row = mysqli_fetch_assoc($result);
+
+            if($row != NULL){ //there is such incidentId that is considered severe
+
+                $severeCase = new cmo_severeCase();
+                
+                $severeCase->setIncidentId($row["incidentId"]);
+                $severeCase->setSuggestionOnAction($row["suggestionOnAction"]);
+                $severeCase->setProposedSuggestion($row["proposedSuggestion"]);
+                $severeCase->setSeverityLevel($row["severityLevel"]);
+                $severeCase->setPmoUsername($row["pmo_username"]);
+                $severeCase->setCmoUsername($row["cmo_username"]);
+                return $severeCase; //return severeCase obj
+            }
+            else{
+            	return false;
+            }
+        }
+
+    	public function isSevere($incidentId){
+    		include('../script/cmo_dbh.php');
+            //query to get all incidents
+            $sql = "SELECT * FROM severeCase WHERE incidentId=?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $incidentId);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            $row = mysqli_fetch_assoc($result);
+
+            if($row != NULL){ //i.e.: it is severe 
+                return true; 
+            }
+            else{
+            	return false;
+            }
+    	}
+
+    	public function hasPmoResponded($incidentId){
+    		include('../script/cmo_dbh.php');
+            //query to get all incidents
+            $sql = "SELECT pmo_username FROM severeCase WHERE incidentId=?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $incidentId);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            $row = mysqli_fetch_assoc($result);
+
+            if($row['pmo_username'] != NULL){ //i.e.: it has responded
+                return true; 
+            }
+            else{
+            	return false;
+            }
+    	}
+
+        public function updatePmoAccept($severeCase){
+            include('../script/cmo_dbh.php');
+            //query to insert record into incident db
+            $sql = "UPDATE severeCase SET pmo_username=? WHERE incidentId=?";
+            
+            $stmt = mysqli_stmt_init($conn);
+            if(!mysqli_stmt_prepare($stmt,$sql)){
+                return "sqlError";
+            }
+    
+            mysqli_stmt_bind_param($stmt, "ss", $severeCase->getPmoUsername(), $severeCase->getIncidentId());
+            
+            $result = mysqli_stmt_execute($stmt);
+            if($result == true){ //insert success
+                return "success";
+            }
+            else{
+                return "insertError";
+            }
+        }
+        
+        public function updatePmoReject($severeCase){
+            include('../script/cmo_dbh.php');
+            //query to insert record into incident db
+            $sql = "UPDATE severeCase SET pmo_username=?, proposedSuggestion=? WHERE incidentId=?";
+            
+            $stmt = mysqli_stmt_init($conn);
+            if(!mysqli_stmt_prepare($stmt,$sql)){
+                return "sqlError";
+            }
+    
+            mysqli_stmt_bind_param($stmt, "sss", $severeCase->getPmoUsername(), $severeCase->getProposedSuggestion(), $severeCase->getIncidentId() );
+            
+            $result = mysqli_stmt_execute($stmt);
+            if($result == true){ //insert success
+                return "success";
+            }
+            else{
+                return "insertError";
+            }
+        }
+
+    	public function insertDetails($severeCase){ //pass severeCase obj as parameter
+    		include('../script/cmo_dbh.php');
+            //query to insert record into incident db
+            $sql = "INSERT INTO severeCase(incidentId,suggestionOnAction,severityLevel,cmo_username) VALUES(?,?,?,?)";
+            
+            $stmt = mysqli_stmt_init($conn);
+            if(!mysqli_stmt_prepare($stmt,$sql)){
+                return "sqlError";
+            }
+    
+            mysqli_stmt_bind_param($stmt, "ssss", $severeCase->getIncidentId(), $severeCase->getSuggestionOnAction(), $severeCase->getSeverityLevel(), $severeCase->getCmoUsername());
+            
+            $result = mysqli_stmt_execute($stmt);
+            if($result == true){ //insert success
+                return "success";
+            }
+            else{
+                return "insertError";
+            }
+    	} 
+	}
+?>

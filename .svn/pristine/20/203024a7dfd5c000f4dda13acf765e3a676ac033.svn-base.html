@@ -1,0 +1,193 @@
+<html>
+<head>
+	<!----------Header----------->
+	<?php include('cmo_header.php');?>
+	<?php include('../classes/cmoController.php');?>
+</head>
+<body>
+	<!----------Top Navigation Bar-------->
+	<?php include('cmo_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('cmo_side_nav_bar.php');?>
+	
+	<!------------------Dashboard section------------------>
+	<section>	
+		<div class = "main-content">
+		<div class="container">
+		<div class="row">
+		<div class="col-md-12">
+			<h3 class="label">Dashboard</h3>
+
+		<!------------------(1)Charts section - SEVERE VS NON-SEVERE CASES------------------>
+
+		<!------------------(a)Array of Datapoints Section------------------>
+		
+		<?php
+			$cmoController = new cmoController();
+			
+			$dataPoints = array( 
+				array("label"=>"severe case", "y"=>$cmoController->getPercentageOfSevereCase()),
+				array("label"=>"non-severe case", "y"=>$cmoController->getPercentageOfNonsevereCase()),
+			)
+		?>
+		
+		<!------------------(b)Display Chart------------------>
+		<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+		
+		<br/>
+		<br/>
+
+		<!------------------(2)Charts section - SUMMARY OF INCIDENTS------------------>
+
+		<!------------------(a)Array of Datapoints Section------------------>
+		<?php
+
+		$dataPoints1 = array(
+		array("label"=> "Fire", "y"=> $cmoController->getNumberOfFire()),
+		array("label"=> "Gas Leak", "y"=> $cmoController -> getNumberOfGasLeak()),
+		array("label"=> "Terrorist Attack", "y"=> $cmoController -> getNumberOfTerroristAttack()),
+		array("label"=> "Traffic Accident", "y"=> $cmoController -> getNumberOfTrafficAccident()),
+		array("label"=> "Natural Disaster", "y"=> $cmoController -> getNumberOfNaturalDisaster()),
+		array("label"=> "Others", "y"=> $cmoController->getNumberOfOthers()),
+		);
+	
+		?>
+		<!------------------(b)Display Chart------------------>
+		<div id="summaryChartContainer" style="height: 370px; width: 100%;"></div>
+
+		<br/>
+		<br/>
+
+		<!------------------(3)Charts section - SUMMARY OF DEATHS AND INJURIES------------------>
+		<?php
+
+		/*------------------(a)Array of Datapoints Section------------------*/
+
+		/*------------------(ai)Number of Deaths----------*/
+		$dataPoints2 = array(
+		array("label"=> "Jan", "y"=> $cmoController -> getNumberOfDeath("January")),
+		array("label"=> "Feb", "y"=> $cmoController -> getNumberOfDeath("February")),
+		array("label"=> "Mar", "y"=> $cmoController -> getNumberOfDeath("March")),
+		array("label"=> "Apr", "y"=> $cmoController -> getNumberOfDeath("April")),
+		array("label"=> "May", "y"=> $cmoController -> getNumberOfDeath("May")),
+		array("label"=> "Jun", "y"=> $cmoController -> getNumberOfDeath("June")),
+		array("label"=> "Jul", "y"=> $cmoController -> getNumberOfDeath("July")),
+		array("label"=> "Aug", "y"=> $cmoController -> getNumberOfDeath("August")),
+		array("label"=> "Sep", "y"=> $cmoController -> getNumberOfDeath("September")),
+		array("label"=> "Oct", "y"=> $cmoController -> getNumberOfDeath("October")),
+		array("label"=> "Nov", "y"=> $cmoController -> getNumberOfDeath("November")),
+		array("label"=> "Dec", "y"=> $cmoController -> getNumberOfDeath("December")),
+		);
+
+		/*------------------(aii)Number of Injuries----------*/
+		$dataPoints3 = array(
+		array("label"=> "Jan", "y"=> $cmoController -> getNumberOfInjuries("January")),
+		array("label"=> "Feb", "y"=> $cmoController -> getNumberOfInjuries("February")),
+		array("label"=> "Mar", "y"=> $cmoController -> getNumberOfInjuries("March")),
+		array("label"=> "Apr", "y"=> $cmoController -> getNumberOfInjuries("April")),
+		array("label"=> "May", "y"=> $cmoController -> getNumberOfInjuries("May")),
+		array("label"=> "Jun", "y"=> $cmoController -> getNumberOfInjuries("June")),
+		array("label"=> "Jul", "y"=> $cmoController -> getNumberOfInjuries("July")),
+		array("label"=> "Aug", "y"=> $cmoController -> getNumberOfInjuries("August")),
+		array("label"=> "Sep", "y"=> $cmoController -> getNumberOfInjuries("September")),
+		array("label"=> "Oct", "y"=> $cmoController -> getNumberOfInjuries("October")),
+		array("label"=> "Nov", "y"=> $cmoController -> getNumberOfInjuries("November")),
+		array("label"=> "Dec", "y"=> $cmoController -> getNumberOfInjuries("December")),
+		);
+
+		?>
+		<!------------------(b)Display Chart------------------>
+		<div id="injuryChartContainer" style="height: 370px; width: 100%;"></div>
+
+		<br/>
+		</div>
+		</div>
+		</div>
+		</div>
+	</section>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+	
+	<script>
+	window.onload = function() {
+		var chart = new CanvasJS.Chart("chartContainer", {
+			animationEnabled: true,
+			theme: "light2", // "light1", "light2", "dark1", "dark2"
+			title: {
+				text: "Severecase vs Non-Severecase"
+			},
+			subtitles: [{
+				text: "April 2019"
+			}],
+			data: [{
+				type: "pie",
+				yValueFormatString: "#,##0.00\"%\"",
+				indexLabel: "{label} ({y})",
+				dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
+			}]
+		});
+		chart.render();
+
+		var summaryChart = new CanvasJS.Chart("summaryChartContainer", {
+			animationEnabled: true,
+			theme: "light2", // "light1", "light2", "dark1", "dark2"
+			title: {
+				text: "Summary of Incidents Occured"
+			},
+			axisY: {
+				title: "Number of Incidents",
+				includeZero: false
+			},
+			data: [{
+				type: "column",
+				dataPoints: <?php echo json_encode($dataPoints1, JSON_NUMERIC_CHECK); ?>
+			}]
+		});
+		summaryChart.render();
+		
+		var injurychart = new CanvasJS.Chart("injuryChartContainer", {
+			animationEnabled: true,
+			theme: "light2",
+			title:{
+				text: "Summary of Casualities"
+			},
+			legend:{
+				cursor: "pointer",
+				verticalAlign: "center",
+				horizontalAlign: "right",
+				itemclick: toggleDataSeries
+			},
+			data: [{
+				type: "column",
+				name: "Number of Deaths",
+				indexLabel: "{y}",
+				yValueFormatString: "0",
+				showInLegend: true,
+				dataPoints: <?php echo json_encode($dataPoints2, JSON_NUMERIC_CHECK); ?>
+			},{
+				type: "column",
+				name: "Number of Injuries",
+				indexLabel: "{y}",
+				yValueFormatString: "0",
+				showInLegend: true,
+				dataPoints: <?php echo json_encode($dataPoints3, JSON_NUMERIC_CHECK); ?>
+			}]
+		});
+		injurychart.render();
+	}
+	function toggleDataSeries(e){
+		if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+			e.dataSeries.visible = false;
+		}
+		else{
+			e.dataSeries.visible = true;
+		}
+		injurychart.render();
+	}
+	</script>
+</body>
+</html>

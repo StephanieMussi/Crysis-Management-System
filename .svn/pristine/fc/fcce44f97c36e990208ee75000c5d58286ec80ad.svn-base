@@ -1,0 +1,140 @@
+*
+{
+	margin: 0;
+	padding: 0;
+}
+body
+{
+	font-family: sans-serif;
+}
+#nav-bar{
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.label{
+	margin-top: 20px;
+}
+.mt-auto, .my-auto {
+    margin-top: auto;
+}
+.pb-3, .py-3 {
+    padding-bottom: 1rem;
+}
+.boldLbl{
+  font-weight: bold;
+}
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+.wide{
+  width: 200px;
+}
+
+.rightmost{
+  float: right;
+}
+
+.errorMsg{
+  color: #FF0000;
+}
+
+/* The sidebar menu */
+.sidenav {
+  height: 100%; /* Full-height: remove this if you want "auto" height */
+  width: 250px; /* Set the width of the sidebar */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1; /* Stay on top */
+  left: 0;
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 20px;
+  border-right: 1px solid; 
+  border-right-color: #D0D3D4;
+}
+
+/* The navigation menu links */
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  color: #000000;
+  display: block;
+  margin: 5px;
+}
+
+/* The icons */
+.sidenav i {
+	width: 10px;
+  margin-right: 10px;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #979A9A;
+  text-decoration: none;
+}
+
+/* Style page content */
+.main-content {
+  margin-left: 250px; /* Same as the width of the sidebar */
+  margin-top: 20px;
+  padding: 0px 10px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+/* Map Styles */
+#header {
+    font-size: 2em;
+    font-weight: bold;
+}
+/* Default text style (dts) */
+.dts {
+    width: 80%;
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+
+/* Always set the map height explicitly to define the size of the div
+* element that contains the map. */
+#map {
+width: 50%;
+height: 50%;
+margin-left: 25%;
+margin-right: 25%;
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+height: 100%;
+margin: 0;
+padding: 0;
+}
+
+.firstHeading {
+    color:rgb(94, 128, 231);
+    font-size: 16px;
+    margin: 5px 0px;
+}
+
+.firstHazeHeading {
+    color:rgb(71, 76, 90);
+    font-size: 16px;
+    margin: 5px 0px;
+}
+
+.bodyHazeContent {
+    color:rgb(111, 118, 138);
+    font-size: 14px;
+}

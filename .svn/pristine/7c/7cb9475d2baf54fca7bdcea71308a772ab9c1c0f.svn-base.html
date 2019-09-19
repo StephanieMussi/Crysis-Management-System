@@ -1,0 +1,411 @@
+<html>
+<head>
+	<?php include('../classes/incidentController.php'); ?>
+	<?php include('../classes/severeCaseController.php'); ?>
+
+	<!----------Header----------->
+	<?php include('cmo_header.php');?>
+</head>
+<body onload="fillFunction()">
+	<!----------Top Navigation Bar-------->
+	<?php include('cmo_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('cmo_side_nav_bar.php');?>
+
+	<!----------------CMO send SMS-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="col-md-12">
+	<div class="row">
+		<h3 class="label">Notify Agency</h3>
+	</div>
+	</div>
+	</div>
+	</div>
+	</div>
+	<!------------Incident Info--------------->
+
+	<?php
+		if(isset($_GET['notify'])!= 'true'){ //if this page is not a result of clicking on view more in approve incident list page
+			if(isset($_GET['edit'])!= 'true'){
+				header("Location: cmo_send_sms_view_all.php");
+				exit();
+			}
+		}
+
+		$incidentController = new incidentController();
+		$incidentId = $_GET['incidentId'];
+		$result = $incidentController->getSpecificIncident($incidentId);
+
+		if($result == 'viewSentRequestError'){
+			echo '<p class="viewSentRequestError" style="color:red">Database execution error. Please try again later</p>';
+		}
+		else if($result == 'sqlError'){
+			echo '<p class="sqlError" style="color:red">Database connection error. Please try again later</p>';
+		}
+	?>
+
+	<div class = "main-content">
+	<div class="col-md-12">	
+	<form name="form" method="post" action="..\script\cmo_confirm_send_telegram.php" onsubmit="return validateForm()">
+		<table class="table table-borderless">
+			<col class="wide">
+			<tr>
+				<td>
+					<label for="incidentId" class="boldlbl">Incident ID:</label>
+				</td>
+				<td>
+					<?php echo($incidentId); ?>
+					<input type="hidden" id="incidentId" name="incidentId"></input><!---input type so that can be passed to server. label cannot be read by server--->
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="name" class="boldlbl">Name:</label>
+				</td>
+				<td>
+					<?php echo($result->getName()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="mobileNo" class="boldlbl">Mobile No.:</label>
+				</td>
+				<td>
+					<?php echo($result->getMobileNo()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="location" class="boldlbl">Location:</label>
+				</td>
+				<td>
+					<?php echo($result->getLocation()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="emergencyType" class="boldlbl">Type of Emergency:</label>
+				</td>
+				<td>
+					<input type="text" class="form-control" id="emergencyType" name="emergencyType" onchange="verifyEmergencyType()">
+				</td>
+				<td>
+					<i class="fas fa-redo-alt" onclick="redoEmergencyType()"></i>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+				<td>
+					<div id="emergencyType_error" class="errorMsg"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="assistanceType" class="boldlbl">Type of Assistance:</label>
+				</td>
+				<td>
+					<input type="text" class="form-control" id="assistanceType" name="assistanceType" onchange="verifyAssistanceType()">
+				</td>
+				<td>
+					<i class="fas fa-redo-alt" onclick="redoAssistanceType()"></i>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+				<td>
+					<div id="assistanceType_error" class="errorMsg"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="remarks" class="boldlbl">Remarks:</label>
+				</td>
+				<td>
+					<textarea class="form-control" rows="3" id="remarks" name="remarks"></textarea>
+				</td>
+				<td>
+					<i class="fas fa-redo-alt" onclick="redoRemarks()"></i>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="dateTime" class="boldlbl">File Date Time:</label>
+				</td>
+				<td>
+					<?php echo($result->getFileDateTime()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="filedBy" class="boldlbl">Filed By:</label>
+				</td>
+				<td>
+					<?php 
+						if($result->getCcoUsername() == ""){
+							echo "Public";
+						}
+						else{
+							echo ($result->getCcoUsername());
+						}
+					?>
+				</td>
+			</tr>
+			<!-------------cmo input------------>
+			<tr>
+				<td>
+					<label for="dispatchUnit" class="boldlbl">Dispatch Unit:</label>
+				</td>
+				<td>
+					<table>
+						<td>
+							<input type="checkbox" class="form-check-input" id="scdf" name="dispatch[]" value="SCDF" onchange="verifyDispatchUnit()">SCDF</input>
+						</td>
+						<td>
+    						<input type="checkbox" class="form-check-input" id="spf" name="dispatch[]" value="SPF" onchange="verifyDispatchUnit()">SPF</input>
+    					</td>
+    					<td>
+    						<input type="checkbox" class="form-check-input" id="sof" name="dispatch[]" value="SOF" onchange="verifyDispatchUnit()">SOF</input>
+    					</td>
+    					<td>
+    						<input type="checkbox" class="form-check-input" id="995" name="dispatch[]" value="995" onchange="verifyDispatchUnit()">995</input>
+    					</td>
+    					<td>
+    						<input type="checkbox" class="form-check-input" id="sp" name="dispatch[]" value="Singapore Power" onchange="verifyDispatchUnit()">Singapore Power</input>
+						</td>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+				<td>
+					<div id="dispatchUnit_error" class="errorMsg"></div>
+				</td>
+			</tr>
+
+			<!-----------------button----------------->
+			<tr>
+				<td>
+					<a href="cmo_send_sms_view_all.php" class="btn btn-basic">Back</a>
+				</td>
+				<td>
+					<?php
+						$severeCaseController = new severeCaseController();
+						$result1 = $severeCaseController->getSpecificSevereCase($incidentId);
+						$hasPmoResponded = $severeCaseController->hasPmoResponded($incidentId);
+						if($result1 != false && $hasPmoResponded == true){ //i.e.: the incident is severe and pmo responded
+					?>
+							<!-- Button trigger modal -->
+							<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModalCenter">View PMO Response</button>
+					<?php } ?>
+
+					<button type="submit" name="btn_submit" class="btn btn-primary rightmost">Preview Message</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+	</div>
+	</div>
+	
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<?php
+    		if($result1 != false && $hasPmoResponded == true){ //needed to repeat. otherwise if you just call $result1->getSeverityLevel() will have error if the incident is not severe. because then, $result1 = false. & false->getSeverityLevel() doesnt make sense
+    	?>
+  				<div class="modal-dialog modal-dialog-centered" role="document">
+    			<div class="modal-content">
+    			<div class="modal-header">
+    				<h5 class="modal-title" id="exampleModalLongTitle">PMO Response</h5>
+        			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        				<span aria-hidden="true">&times;</span>
+        			</button>
+    			</div>
+    			<div class="modal-body">
+    				<table class="table table-borderless">
+    				<tr>
+						<td>
+							<label for="severityLevel" class="boldlbl">Severity Level:</label>
+						</td>
+						<td>
+							<?php echo $result1->getSeverityLevel() ?>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="proposedSuggestion" class="boldlbl">PMO Response:</label>
+						</td>
+						<td>
+							<?php
+								if($result1->getProposedSuggestion() != NULL){ //i.e.: pmo rejected
+									echo($result1->getProposedSuggestion());
+								}
+								else{
+									echo($result1->getSuggestionOnAction());	
+								}
+							?>
+						</td>
+					</tr>	
+    				</table>
+    			</div>
+    			<div class="modal-footer">
+        			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    			</div>
+    			</div>
+  				</div>
+  		<?php } ?>
+	</div>
+
+
+
+
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+	
+</body>
+</html>
+
+<!---------------Client-side Validation----------------->
+<script>
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&]*)|&|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+//fill in label with values based on querystring passed
+function fillFunction(){
+	//incidentId
+	var incidentId = document.getElementById('incidentId');
+	incidentId.value = getParameterByName('incidentId');
+
+	if(getParameterByName('notify') == 'true'){
+		var emergencyType = document.getElementById('emergencyType');
+		emergencyType.value = '<?php echo($result->getEmergencyType()); ?>';
+
+		var assistanceType = document.getElementById('assistanceType');
+		assistanceType.value = '<?php echo($result->getTypeOfAssistance()); ?>';
+
+		var remarks = document.getElementById('remarks');
+		remarks.value = '<?php echo($result->getRemarks()); ?>';
+	}
+	else if(getParameterByName('edit') == 'true'){
+		var emergencyType = document.getElementById('emergencyType');
+		emergencyType.value = getParameterByName('emergencyType');
+
+		var assistanceType = document.getElementById('assistanceType');
+		assistanceType.value = getParameterByName('assistanceType');
+
+		var remarks = document.getElementById('remarks');
+		remarks.value = getParameterByName('remarks');
+
+		var scdf = getParameterByName('scdf');
+		var spf = getParameterByName('spf');
+		var sof = getParameterByName('sof');
+		var _995 = getParameterByName('995');
+		var sp = getParameterByName('sp');
+
+		if(scdf == 'checked'){
+			document.getElementById('scdf').checked = true;
+		}
+		if(spf == 'checked'){
+			document.getElementById('spf').checked = true;
+		}
+		if(sof == 'checked'){
+			document.getElementById('sof').checked = true;
+		}
+		if(_995 == 'checked'){
+			document.getElementById('995').checked = true;
+		}	
+		if(sp == 'checked'){
+			document.getElementById('sp').checked = true;
+		}
+	}
+}
+
+function redoEmergencyType(){
+	var emergencyType = document.getElementById('emergencyType');
+	emergencyType.value = '<?php echo($result->getEmergencyType()); ?>';
+}
+
+function redoAssistanceType(){
+	var assistanceType = document.getElementById('assistanceType');
+	assistanceType.value = '<?php echo($result->getTypeOfAssistance()); ?>';
+}
+
+function redoRemarks(){
+	var remarks = document.getElementById('remarks');
+	remarks.value = '<?php echo($result->getRemarks()); ?>';
+}
+
+function verifyEmergencyType(){
+	var emergencyType = document.getElementById('emergencyType');
+	var emergencyType_error = document.getElementById('emergencyType_error');
+	if(emergencyType.value != ''){
+		emergencyType.blur();
+		emergencyType_error.innerHTML = "";
+		return true;
+	}
+}
+
+function verifyAssistanceType(){
+	var assistanceType = document.getElementById('assistanceType');
+	var assistanceType_error = document.getElementById('assistanceType_error');
+	if(assistanceType.value != ''){
+		assistanceType.blur();
+		assistanceType_error.innerHTML = "";
+		return true;
+	}
+}
+
+function verifyDispatchUnit(){
+	var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+	var checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
+	if(checkedOne == true){
+		dispatchUnit_error.innerHTML = "";
+		return true;
+	}
+}
+
+function validateForm(){
+	// initialize input elements
+	var emergencyType = document.getElementById('emergencyType');
+	var assistanceType = document.getElementById('assistanceType');
+	var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+	var checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
+
+	var emergencyType_error = document.getElementById('emergencyType_error');
+	var assistanceType_error = document.getElementById('assistanceType_error');	
+	var dispatchUnit_error = document.getElementById('dispatchUnit_error');	
+	
+	if(emergencyType.value == ""){
+		emergencyType_error.textContent = "You have to enter an emergency type";
+		emergencyType.focus();
+		emergencyType.select();
+		return false;
+	}
+
+	if(assistanceType.value == ""){
+		assistanceType_error.textContent = "You have to enter an assistance type";
+		assistanceType.focus();
+		assistanceType.select();
+		return false;
+	}
+
+	if(checkedOne == false){
+		dispatchUnit_error.textContent = "Please select at least one dispatch unit";
+		return false;
+	}
+}
+</script>

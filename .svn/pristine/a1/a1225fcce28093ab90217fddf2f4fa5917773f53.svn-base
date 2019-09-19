@@ -1,0 +1,31 @@
+<?php
+
+
+include('../classes/incident.php');
+include('../script/cmo_dbh.php');
+
+//change to notify = 0 and set to 1
+
+$sql = "SELECT * FROM incident WHERE hasNotify LIKE 'false%';";
+$result2 = mysqli_query($conn, $sql);
+
+$dbdata= array();
+
+while ( $row = $result2->fetch_assoc())  {
+    $dbdata[]=$row;
+}
+
+$resultCheck = mysqli_num_rows($result2);
+if($resultCheck!=0) {
+
+    echo json_encode($dbdata);
+
+    $sql2 = "UPDATE incident SET hasNotify = 'true' WHERE hasNotify LIKE 'false%';";
+    $result = mysqli_query($conn, $sql2);
+
+}else{
+
+    echo "NIL";
+}
+
+?>

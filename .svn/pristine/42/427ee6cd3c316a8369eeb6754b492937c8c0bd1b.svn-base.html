@@ -1,0 +1,319 @@
+<html>
+<head>
+	<?php include('../classes/agencyController.php'); ?>
+
+	<!----------Header----------->
+	<?php include('agency_header.php');?>
+</head>
+
+<body onload="fillFunction()">
+	<!----------Top Navigation Bar-------->
+	<?php include('agency_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('agency_side_nav_bar.php');?>
+
+	<!----------------Update incident list-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="col-md-12">
+	<div class="row">
+		<h3 class="label">Update Incident Inforamtion</h3>
+	</div>
+	</div>
+	</div>
+	</div>
+	<!------------Incident Info--------------->
+	<?php
+		if(isset($_GET['update'])!= 'true'){ //if this page is not a result of clicking on view more in approve incident list page
+			header("Location: agency_view_incident_list.php");
+			exit();
+		}
+
+		$agencyController = new agencyController();
+		$incidentId = $_GET['incidentId'];
+		$result = $agencyController->getSpecificIncident($incidentId);
+		
+		//Error Messages for DB
+		if($result == 'viewSentRequestError'){
+			echo '<p class="viewSentRequestError" style="color:red">Database execution error. Please try again later</p>';
+		}
+		else if($result == 'sqlError'){
+			echo '<p class="sqlError" style="color:red">Database connection error. Please try again later</p>';
+		}
+	?>
+
+	<div class = "main-content">
+	<div class="col-md-8">	
+		<table class="table table-borderless">
+			<tr>
+				<td>
+					<label for="incidentId" class="boldlbl">Incident ID:</label>
+				</td>
+				<td>
+					<?php echo($incidentId); ?>
+					<input type="hidden" id="incidentId" name="incidentId"></input><!---input type so that can be passed to server. label cannot be read by server--->
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="name" class="boldlbl">Name:</label>
+				</td>
+				<td>
+					<?php echo($result->getName()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="mobileNo" class="boldlbl">Mobile No.:</label>
+				</td>
+				<td>
+					<?php echo($result->getMobileNo()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="location" class="boldlbl">Location:</label>
+				</td>
+				<td>
+					<?php echo($result->getLocation()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="emergencyType" class="boldlbl">Type of Emergency:</label>
+				</td>
+				<td>
+					<?php echo($result->getEmergencyType()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="assistanceType" class="boldlbl">Type of Assistance:</label>
+				</td>
+				<td>
+					<?php echo($result->getTypeOfAssistance()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="remarks" class="boldlbl">Remarks:</label>
+				</td>
+				<td>
+					<?php echo($result->getRemarks()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="dateTime" class="boldlbl">File Date Time:</label>
+				</td>
+				<td>
+					<?php echo($result->getFileDateTime()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="filedBy" class="boldlbl">Filed By:</label>
+				</td>
+				<td>
+					<?php 
+						if($result->getCcoUsername() == ""){
+							echo "Public";
+						}
+						else{
+							echo ($result->getCcoUsername());
+						}
+					?>
+				</td>
+			</tr>
+
+			<!-------------Update Action Taken Text Box------------->
+			<tr>
+				<td>
+					<label for="actionTaken" class="boldlbl">Updates:</label>
+				</td>
+				<td>
+					<textarea id="actionTaken" rows="4" cols="50" class="form-control" placeholder="Specify the actions taken"></textarea>
+				</td>
+			</tr>
+
+			<!-------------Update Dispatch Status ------------->
+			<tr>
+				<td>
+					<label for="updateDispatchStatus" class="boldlbl">Is the Incident Solved?</label>
+				</td>
+				<td>
+  					<input type="checkbox" id="resolved" value="Solved">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div id="error" style="color: #FF0000;"></div>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<!----------------------Submit Information--------------------->
+					<a href="agency_view_incident_details.php?viewMore=true&incidentId=<?php echo($incidentId); ?>" class="btn btn-basic">Back</a>
+					<!-- Button trigger modal -->
+				</td>
+				<td>
+					<!-- Button trigger modal -->
+					<?php
+						$checkMsgRecordResult= $agencyController->getAllMsg($incidentId); 
+						//returns all messages of a specific incident.
+						if($checkMsgRecordResult!= false){
+					?>
+							<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#viewPreviousUpdates">View Previous Updates</button>
+					<?php
+						}
+					?>	
+					<button type="button" class="btn btn-primary" onclick="validateForm()">Submit</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	</div>
+	
+	<!------------Modal Popup--------------->
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  	<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+    	<div class="modal-header">
+        	<h5 class="modal-title" id="exampleModalLabel">Update Confirmation</h5>
+        	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          		<span aria-hidden="true">&times;</span>
+        	</button>
+      	</div>
+      	<div class="modal-body">
+        	<center>
+        		Are you sure you would like to update the actions taken?<br/>
+        		This process cannot be undone.
+      		</center>
+      	</div>
+     	<div class="modal-footer">
+        	<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        	<button type="button" class="btn btn-primary" onclick="clickConfirm(<?php echo($incidentId); ?>)">Confirm</button>
+      	</div>
+   	</div>
+ 	</div>
+	</div>
+
+
+	<!------------Modal--------------->
+	<div class="modal fade" id="viewPreviousUpdates" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<?php
+    	if($checkMsgRecordResult!= false){
+    ?>
+  	<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+    	<div class="modal-header">
+        	<h5 class="modal-title" id="exampleModalLabel">Previous Updates</h5>
+        	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          		<span aria-hidden="true">&times;</span>
+        	</button>
+      	</div>
+      	<div class="modal-body">
+        	<table>
+        		<?php
+        			foreach($checkMsgRecordResult as $row ){
+        		?>
+        				<tr>
+							<td><b><?php echo ($row['updateDateTime']); echo(":&nbsp;"); ?></b></td>
+							<?php 
+								if($row['msg'] == ''){
+							?>
+									<td><?php echo("-"); ?></td>
+							<?php
+								}
+								else{
+							?>
+									<td><?php echo ($row['msg']); ?></td>
+							<?php
+								}
+							?>
+						</tr>
+						<tr>
+							<?php
+								if($row['numDeaths'] != 0){
+							?>
+									<td><i>Number of Deaths:</i></td>
+									<td><?php echo($row['numDeaths']); ?></td>
+							<?php
+								}
+								if($row['numInjured'] != 0){
+							?>
+									<td><i>Number of Injured:</i></td>
+									<td><?php echo($row['numInjured']); ?></td>
+							<?php
+								}
+							?>
+						</tr>
+				<?php
+					}
+				?>
+        	</table>
+      	</div>
+     	<div class="modal-footer">
+        	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      	</div>
+    <?php
+    	}
+    ?>
+   	</div>
+ 	</div>
+	</div>
+
+
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+
+	<!---------------Client-side Validation----------------->
+	<script>
+	//if user click on confirm button
+	/* function checked(){
+		document.getElementById("resolved").checked=true;
+	}*/
+
+		/*Function Validation will be called*/
+
+		function validateForm(){
+			var actionTaken = document.getElementById('actionTaken');
+			var error = document.getElementById('error');
+			//var isValid = true;
+			if(actionTaken.value=="" && document.getElementById('resolved').checked ==false){
+				//isValid = false;
+				error.textContent = "Please write an action taken or if the incident is resolved, please tick the checkbox!";
+				//window.href.location('../agency/agency_update_incident_status.php?update=true');
+				}
+				else{
+					$("#exampleModal").modal({
+						show:true
+					});
+				}
+			}
+
+
+		
+		function clickConfirm(incidentId){
+			var actionTaken = document.getElementById('actionTaken');
+
+			if(document.getElementById('resolved').checked == true){
+				url = "../agency/agency_update_incident_summary.php?confirmUpdate=true&incidentId="+incidentId+"&status=Resolved&msg="+actionTaken.value;
+				window.location.assign(url);
+			}
+			else{
+				url = "../script/agency_update_action.php?confirmUpdate=true&incidentId="+incidentId+"&status=In Progress&msg="+actionTaken.value;
+				window.location.assign(url);
+			}
+
+		} 
+
+	</script>
+
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<?php
+include('cmo_notSevereCase.php');
+	class cmo_notSevereCaseController { 
+		//other methods
+        public function isNotSevere($incidentId){
+            include('../script/cmo_dbh.php');
+            //query to get all incidents
+            $sql = "SELECT * FROM notSevereCase WHERE incidentId=?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            if(!mysqli_stmt_prepare($stmt,$sql)){
+                return "sqlError";
+            }
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $incidentId);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            $row = mysqli_fetch_assoc($result);
+
+            if($row != NULL){ //there is such incidentId
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
+    	public function insertDetails($notSevereCase){ //pass obj
+    		include('../script/cmo_dbh.php');
+    		//query to insert record into location db
+    		$sql = "INSERT INTO notSevereCase(incidentId, cmo_username) VALUES(?,?)";
+			
+			$stmt = mysqli_stmt_init($conn);
+			if(!mysqli_stmt_prepare($stmt,$sql)){
+				return "sqlError";
+			}
+	
+			mysqli_stmt_bind_param($stmt, "ss", $notSevereCase->getIncidentId(), $notSevereCase->getCmoUsername());
+			
+			$result = mysqli_stmt_execute($stmt);
+			if($result == true){ //insert success
+				return "success";
+			}
+			else{
+				return "insertError";
+			}
+    	} 
+	} 
+?>

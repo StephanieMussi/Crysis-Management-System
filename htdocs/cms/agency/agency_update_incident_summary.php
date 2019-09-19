@@ -1,0 +1,170 @@
+<html>
+<head>
+
+	<!----------Header----------->
+	<?php include('agency_header.php');?>
+
+</head>
+
+<body onload="fillFunction()">
+	<!----------Top Navigation Bar-------->
+	<?php include('agency_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('../script/side_nav_bar.php');?>
+
+	<!----------------Update incident list-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="col-md-12">
+	<div class="row">
+		<h3 class="label">Update Incident Information</h3>
+	</div>
+	</div>
+	</div>
+	</div>
+	<!------------Incident Info--------------->
+	<?php
+		if(isset($_GET['status'])!= 'Resolved'){ //if this page is not a result of clicking on view more in approve incident list page
+			header("Location: agency_view_incident_list.php");
+			exit();
+		}
+
+		//$incident = new agency_incidentController();
+		$incidentId = $_GET['incidentId'];
+		$msg = $_GET['msg'];
+	?>
+
+	<div class = "main-content">
+	<div class="col-md-6">	
+		<table class="table table-borderless">
+			<tr>
+				<td>
+					<label for="incidentId" class="boldlbl">Incident ID:</label>
+				</td>
+				<td>
+					<?php echo($incidentId); ?>
+					<input type="hidden" id="incidentId" name="incidentId"></input><!---input type so that can be passed to server. label cannot be read by server--->
+					<input type="hidden" id="msg" name="msg" value=<?php echo $msg?>></input><!---input type so that can be passed to server. label cannot be read by server--->
+				</td>
+			</tr>
+			
+			<!----------------------Update Action Taken By Agencies---------------------->
+
+			<!-------------Update Action Taken Text Box------------->
+			<tr>
+				<td>
+					<label for="numDeath" class="boldlbl">Number of Death: </label>
+				</td>
+				<td>
+					<input type="text" id="death" class="form-control" onkeypress="validate(event)"></input>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="numInjured" class="boldlbl">Number of Injured: </label>
+				</td>
+				<td>
+					<input type="text" id="injured" class="form-control" onkeypress="validate(event)"></input>
+				</td>
+			</tr>
+
+
+			<tr>
+				<td>
+					<a href="agency_update_incident_status.php?update=true&incidentId=<?php echo($incidentId) ?>" class="btn btn-basic">Back</a>
+				</td>
+				<td>
+					<!----------------------Submit Information--------------------->
+					<!-- Button trigger modal -->
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Submit</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	</div>
+	
+	<!------------Modal Popup--------------->
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  	<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+    	<div class="modal-header">
+        	<h5 class="modal-title" id="exampleModalLabel">Update Confirmation</h5>
+        	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          		<span aria-hidden="true">&times;</span>
+        	</button>
+      	</div>
+      	<div class="modal-body">
+        	<center>
+        		Are you sure you would like to update the actions taken?<br/>
+        		This process cannot be undone.
+      		</center>
+      	</div>
+     	<div class="modal-footer">
+        	<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        	<button type="button" class="btn btn-primary" onclick="clickConfirm(<?php echo($incidentId); ?>)">Confirm</button>
+      	</div>
+   	</div>
+ 	</div>
+	</div>
+
+
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+
+	<!---------------Client-side Validation----------------->
+	<script>
+	//if user click on confirm button
+	/* function checked(){
+		document.getElementById("resolved").checked=true;
+	}*/
+		function clickConfirm(incidentId){
+			var death = document.getElementById('death');
+			var injured = document.getElementById('injured');
+			var msgRaw = getParameterByName('msg');
+			if(msgRaw== ""){
+				msgRaw = '(Resolved)';
+			} else {
+				msgRaw = msgRaw + ' (Resolved)';
+			}
+
+			//document.getElementById('msg').value = msgRaw;
+			//var msg =document.getElementById('msg')
+			url = "../script/agency_update_action.php?confirmUpdate=true&incidentId="+incidentId+"&status=Resolved&msg="+msgRaw+"&death="+death.value+"&injured="+injured.value;
+			window.location.assign(url);
+
+		} 
+
+		function validate(evt) {
+				var theEvent = evt || window.event;
+
+				// Handle paste
+				if (theEvent.type === 'paste') {
+				key = event.clipboardData.getData('text/plain');
+				} else {
+				// Handle key press
+				var key = theEvent.keyCode || theEvent.which;
+				key = String.fromCharCode(key);
+				}
+				var regex = /^\d*$/; // /[0-9]|\./;
+				if( !regex.test(key) ) {
+				theEvent.returnValue = false;
+				if(theEvent.preventDefault) theEvent.preventDefault();
+		  }
+		}
+
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, '\\$&');
+		    var regex = new RegExp('[?&]' + name + '(=([^&]*)|&|$)'),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+		}
+	</script>
+
+</body>
+</html>

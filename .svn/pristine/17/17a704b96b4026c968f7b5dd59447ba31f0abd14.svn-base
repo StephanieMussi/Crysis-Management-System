@@ -1,0 +1,335 @@
+var map;
+
+var crisisList;
+var gmarkers = [];
+
+function getCrisisList(){
+  crisisList = [
+    {
+      title: "Example fire crisis",
+      description: "example desc",
+      position: {lat: 1.3483, lng: 103.6831},
+      type: "Natural disaster",
+      status: "open",
+    },
+    {
+      title: "Example bomb crisis",
+      description: "example desc",
+      position: {lat: 1.3693, lng: 103.8031},
+      type: "Gas Leak Control",
+      status: "closed",
+    },
+    {
+      title: "Example bomb crisis",
+      description: "example desc",
+      position: {lat: 1.3683, lng: 103.8031},
+      type: "Terrorist Attack",
+      status: "open",
+    }
+  ];
+return;
+}
+
+function addCrisis(crisis){
+  var contentString = '<div id="content">'+
+  '<div id="siteNotice">'+
+  '</div>'+
+  '<h1 id="firstHeading" class="firstHeading">' +
+  crisis.title+
+  '</h1>'+
+  '<div id="bodyContent" class="bodyContent">'+
+  crisis.description+
+  '</div>'+
+  '</div>';
+
+  var infowindow = new google.maps.InfoWindow({
+  content: contentString
+  });
+  
+	google.maps.event.addListener(map, "click", function(event) {
+		infowindow.close();
+	});
+
+  var icon;
+  
+  switch (crisis.type){
+    case("Fire"):
+    icon={url: "https://static.thenounproject.com/png/818-200.png",
+    scaledSize: new google.maps.Size(30, 30), // scaled size
+    origin: new google.maps.Point(0,0), // origin
+    anchor: new google.maps.Point(0, 0) // anchor
+  };
+  break;
+  case("Terrorist Attack"):
+  icon={
+  url: "https://pngimage.net/wp-content/uploads/2018/06/gun-png-icon-3.png",
+  scaledSize: new google.maps.Size(30, 30), // scaled size
+  origin: new google.maps.Point(0,0), // origin
+  anchor: new google.maps.Point(0, 0) // anchor
+};
+break;
+case("Traffic incident"):
+  icon={
+  url: "https://png.pngtree.com/svg/20170705/accident_571428.png",
+  scaledSize: new google.maps.Size(30, 30), // scaled size
+  origin: new google.maps.Point(0,0), // origin
+  anchor: new google.maps.Point(0, 0) // anchor
+};
+break;
+case("Natural disaster"):
+  icon={
+  url: "https://png.pngtree.com/svg/20170513/213ec8279d.png",
+  scaledSize: new google.maps.Size(30, 30), // scaled size
+  origin: new google.maps.Point(0,0), // origin
+  anchor: new google.maps.Point(0, 0) // anchor
+};
+break;
+case("Gas Leak Control"):
+  icon={
+  url: "https://pngimage.net/wp-content/uploads/2018/06/gun-png-icon-3.png",
+  scaledSize: new google.maps.Size(30, 30), // scaled size
+  origin: new google.maps.Point(0,0), // origin
+  anchor: new google.maps.Point(0, 0) // anchor
+};
+break;
+  default:
+  icon={
+    url: "http://cdn.onlinewebfonts.com/svg/img_79910.png",
+    scaledSize: new google.maps.Size(30, 30), // scaled size
+    origin: new google.maps.Point(0,0), // origin
+    anchor: new google.maps.Point(0, 0) // anchor
+  };
+  break; 
+  }
+
+  var marker = new google.maps.Marker({
+  position: crisis.position,
+  map: map,
+  icon: icon,
+  title: crisis.title
+  });
+  gmarkers.push(marker);
+  marker.addListener('click', function() {
+    infowindow.open(map, this);
+    });
+}
+
+function addHaze(values, region, position){
+  var contentString = '<div id="content">'+
+  '<div id="siteNotice">'+
+  '</div>'+
+  '<h1 id="firstHazeHeading" class="firstHazeHeading">' +
+  'Air Quality '+region+
+  '</h1>'+
+  '<div id="bodyHazeContent" class="bodyHazeContent">'+
+  '<b>PSI</b>: '+ values.psi+
+  '</div>'+
+  '</div>';
+
+  var infowindow = new google.maps.InfoWindow({
+  content: contentString
+  });
+  
+	google.maps.event.addListener(map, "click", function(event) {
+		infowindow.close();
+	});
+
+  var icon = {
+    url: "https://image.flaticon.com/icons/png/512/182/182266.png",
+    scaledSize: new google.maps.Size(30, 30), // scaled size
+    origin: new google.maps.Point(0,0), // origin
+    anchor: new google.maps.Point(0, 0) // anchor
+};
+
+  var marker = new google.maps.Marker({
+  position: position,
+  map: map,
+  icon: icon,
+  title: 'Air Quality '+ region
+  });
+  gmarkers.push(marker);
+  marker.addListener('click', function() {
+    infowindow.open(map, this);
+    });
+}
+
+function addWeather(condition, region, position){
+  var contentString = '<div id="content">'+
+  '<div id="siteNotice">'+
+  '</div>'+
+  '<h1 id="firstHazeHeading" class="firstHazeHeading">' +
+  'Weather in '+region+
+  '</h1>'+
+  '<div id="bodyHazeContent" class="bodyHazeContent">'+
+  '<b>Condition</b>: '+ condition+
+  '</div>'+
+  '</div>';
+
+  var infowindow = new google.maps.InfoWindow({
+  content: contentString
+  });
+  
+	google.maps.event.addListener(map, "click", function(event) {
+		infowindow.close();
+	});
+
+  var icon = weatherIcons(condition);
+
+  var marker = new google.maps.Marker({
+  position: position,
+  map: map,
+  icon: icon,
+  title: 'Weather in '+ region
+  });
+  gmarkers.push(marker);
+  marker.addListener('click', function() {
+    infowindow.open(map, this);
+    });
+}
+
+function initMap() {
+getCrisisList();
+map = new google.maps.Map(document.getElementById('map'), {
+  center: {lat: 1.3516, lng: 103.808},
+  zoom: 11
+});
+
+dataLayer = new google.maps.Data(); // Initialise data layer
+whichLayerToShow();
+}
+
+// Function to decide which overlay to show
+function whichLayerToShow() {
+	var rbDengue = document.getElementById('rbDengue');
+	var rbHaze = document.getElementById('rbHaze');
+  var rbCrises = document.getElementById('rbCrises');
+  var rbWeather = document.getElementById('rbWeather');
+	rbDengue.onclick = function() {
+    for(i=0; i<gmarkers.length; i++){
+      gmarkers[i].setMap(null);
+  }
+		dataLayer.setMap(null);
+		dengue();
+	}
+	rbHaze.onclick = function() {
+    for(i=0; i<gmarkers.length; i++){
+      gmarkers[i].setMap(null);
+  }
+		dataLayer.setMap(null);
+		haze();
+	}
+	rbCrises.onclick = function() {
+    for(i=0; i<gmarkers.length; i++){
+      gmarkers[i].setMap(null);
+  }
+		dataLayer.setMap(null);
+		crises();
+  }
+  rbWeather.onclick = function() {
+    for(i=0; i<gmarkers.length; i++){
+      gmarkers[i].setMap(null);
+  }
+		dataLayer.setMap(null);
+		weather();
+	}
+}
+
+function dengue() {
+	dataLayer.loadGeoJson('https://gist.githubusercontent.com/DCHIA017/4566728dd72b3c537c3128e81134cbe4/raw/80f2c6b238d50cf1debf27c088d05eaf208116d6/dengue-clusters-geojson.geojson');
+	dataLayer.setMap(map);
+}
+
+function haze() {
+  // Data in console
+  var hazeData;
+	let xhr = new XMLHttpRequest;
+	xhr.open('GET', 'https://api.data.gov.sg/v1/environment/psi', true)
+	xhr.onload = function() 
+		{
+			if (this.status === 200) 
+			{
+        hazeData=JSON.parse(this.responseText);
+        console.log(hazeData);
+        var psi = hazeData.items[0].readings.psi_twenty_four_hourly;
+        var latlong = hazeData.region_metadata;
+          addHaze({psi: psi.west}, 'west', {lat: latlong[0].label_location.latitude, lng: latlong[0].label_location.longitude});
+          addHaze({psi: psi.north}, 'north', {lat:latlong[5].label_location.latitude, lng: latlong[5].label_location.longitude});
+          addHaze({psi: psi.east}, 'east', {lat: latlong[2].label_location.latitude, lng: latlong[2].label_location.longitude});
+          addHaze({psi: psi.south}, 'south', {lat: latlong[4].label_location.latitude, lng: latlong[4].label_location.longitude});
+          addHaze({psi: psi.central}, 'central', {lat: latlong[3].label_location.latitude, lng: latlong[3].label_location.longitude});
+      
+			}
+		}
+  xhr.send();
+  
+}
+
+function weather() {
+  var weatherData;
+	let xhr = new XMLHttpRequest;
+	xhr.open('GET', 'https://api.data.gov.sg/v1/environment/2-hour-weather-forecast', true)
+	xhr.onload = function() 
+		{
+			if (this.status === 200) 
+			{
+        weatherData=JSON.parse(this.responseText);
+        var areas =weatherData.area_metadata;
+        for(var i=0; i<areas.length; i++){
+          var condition=weatherData.items[0].forecasts[i].forecast;
+          var region=weatherData.items[0].forecasts[i].area;
+          var lat=weatherData.area_metadata[i].label_location.latitude;
+          var long=weatherData.area_metadata[i].label_location.longitude;
+          addWeather(condition, region, {lat: lat, lng: long});
+        }
+			}
+		}
+  xhr.send();
+  
+}
+
+function crises() {
+	for (var i=0; i<crisisList.length; i++){
+    if(crisisList[i].status ==="open"){
+      addCrisis(crisisList[i]);
+    }
+}
+}
+
+function weatherIcons(condition) {
+	var icon;
+	var url;
+	
+	if(condition.toLowerCase().includes("fair")) {
+		url = "https://cdn3.iconfinder.com/data/icons/weather-icons-8/512/weather-sunny-512.png";
+	}
+	
+	else if(condition.toLowerCase().includes("cloudy")) {
+		url = "https://cdn3.iconfinder.com/data/icons/weather-icons-8/512/weather-cloudy-512.png";
+	}
+	else if(condition.toLowerCase.includes("hazy")) {
+		url = "https://cdn3.iconfinder.com/data/icons/weather-icons-8/512/weather-fog-512.png";
+	}
+	else if(condition.toLowerCase().includes("windy")) {
+		url = "https://cdn3.iconfinder.com/data/icons/weather-icons-8/512/weather-windy-512.png";
+	}
+	else if(condition.toLowerCase().includes("mist")) {
+		url = "https://cdn3.iconfinder.com/data/icons/weather-icons-8/512/weather-cloudy-fog-512.png";
+	}
+	else if(condition.toLowerCase().includes("thunder")) {
+		url = "https://cdn3.iconfinder.com/data/icons/weather-icons-8/512/weather-thunder-rainy-h-512.png";
+	}
+	else if(condition.toLowerCase().includes("rain") || condition.toLowerCase().includes("showers")) {
+		url = "https://cdn3.iconfinder.com/data/icons/weather-icons-8/512/weather-rainy-h-512.png";
+	}
+	else {
+		url = "https://cdn3.iconfinder.com/data/icons/weather-icons-8/512/weather-partlycloudy-512.png";
+	}
+	 
+	icon = {
+    url: url,
+    scaledSize: new google.maps.Size(30, 30), // scaled size
+    origin: new google.maps.Point(0,0), // origin
+    anchor: new google.maps.Point(0, 0) // anchor
+	}
+	return icon;
+}

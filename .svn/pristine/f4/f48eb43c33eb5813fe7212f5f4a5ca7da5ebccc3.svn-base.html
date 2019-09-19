@@ -1,0 +1,160 @@
+<html>
+<head>
+    <?php include('../classes/agencyController.php'); ?>
+    <!----------Header----------->
+    <?php include('cco_header.php');?>
+</head>
+<body>
+    <!----------Top Navigation Bar-------->
+    <?php include('cco_top_nav_bar.php');?>
+
+    <!----------Side Navigation Bar-------->
+    <?php include('cco_side_nav_bar.php');?>
+
+    <!------------------Dashboard section------------------>
+    <section>
+        <div class = "main-content">
+        <div class="container">
+        <div class="row">
+        <div class="col-md-12">
+            <h3 class="label">Dashboard</h3>
+
+
+            <?php
+                date_default_timezone_set("Asia/Singapore");
+                echo date("l") . "&nbsp;".date("d/m/Y") ."&nbsp;". date("H:i");
+                ?>
+
+
+            <ul style="list-style-type: none;">
+                <li style="float:left;text-align: center;padding: 5px;">
+                    <a href="#C1">View Statistics</a>
+                </li>
+                <li style="float:left;text-align: center;padding: 5px;">
+                    <a href="#C2">View Filed Incidents</a>
+                </li>
+            </ul>
+
+            <p>&nbsp;</p>
+            <hr>
+
+            <h4 class="label" id="C1">Incident Statistics</h4>
+            <p>&nbsp;</p>
+
+            <table class="table" style="height: 140px;padding: 2px;" border="5" width="900">
+
+            <tbody>
+                <tr style="height: 70px; text-align:center;" >
+                    <th scope="col" width="150">Fire</th>
+                    <th scope="col" width="150">Gas Leak</th>
+                    <th scope="col" width="150">Natrual Disaster</th>
+                    <th scope="col" width="150">Traffic Accident</th>
+                    <th scope="col" width="150">Terrorist Attack</th>
+                    <th scope="col" width="150">Others</th>
+                </tr>
+
+
+                <tr style="height: 70px;text-align:center;">
+                    <td title="Total number of fire">
+                    <?php
+                        $incidentController = new agencyController();
+                        $emergencyType1 = "Fire";
+                        $allIncidentArray1 = $incidentController->getAllIncidentsByEmergencyType($emergencyType1);
+                        $count1 = mysqli_num_rows($allIncidentArray1);
+                        echo $count1;
+                    ?></td>
+                    <td title="Total number of gas leak">
+                    <?php
+                        $emergencyType2 = "Gas Leak";
+                        $allIncidentArray2 = $incidentController->getAllIncidentsByEmergencyType($emergencyType2);
+                        $count2 = mysqli_num_rows($allIncidentArray2);
+                        echo $count2;
+                    ?></td>
+                    <td title="Total number of natural disaster">
+                    <?php
+                        $emergencyType3 = "Natural Disaster";
+                        $allIncidentArray3 = $incidentController->getAllIncidentsByEmergencyType($emergencyType3);
+                        $count3 = mysqli_num_rows($allIncidentArray3);
+                        echo $count3;
+                    ?></td>
+                    <td title="Total number of traffic accident">
+                    <?php
+                        $emergencyType4 = "Traffic Accident";
+                        $allIncidentArray4 = $incidentController->getAllIncidentsByEmergencyType($emergencyType4);
+                        $count4 = mysqli_num_rows($allIncidentArray4);
+                        echo $count4;
+                    ?></td>
+                    <td title="Total number of terrorist attack">
+                    <?php
+                        $emergencyType5 = "Terrorist Attack";
+                        $allIncidentArray5 = $incidentController->getAllIncidentsByEmergencyType($emergencyType5);
+                        $count5 = mysqli_num_rows($allIncidentArray5);
+                        echo $count5;
+                    ?></td>
+                    <td title="Total number of other incidents">
+                    <?php
+                        $allIncidentArray6 = $incidentController->getOtherIncidents();
+                        $count6 = mysqli_num_rows($allIncidentArray6);
+                        echo $count6;
+                    ?></td>
+                </tr>
+            </tbody>
+            </table>
+
+
+            <p>&nbsp;</p>
+            <hr>
+
+            <h4 class="label" id="C2">Filed Incidents</h4>
+            <p>&nbsp;</p>
+
+            <table class="table" style="height: 140px;padding: 2px;" border="5" width="910">
+            <tbody>
+                <tr style="height: 70px;text-align:center;">
+                    <th scope="col" width="130">ID</th>
+                    <th scope="col" width="130">Name</th>
+                    <th scope="col" width="130">Mobile No.</th>
+                    <th scope="col" width="130">Location</th>
+                    <th scope="col" width="130">Emergency Type</th>
+                    <th scope="col" width="130">Assistance Type</th>
+                    <th scope="col" width="130">File Date Time</th>
+                </tr>
+
+            <?php
+                $username = "cco1";
+                $allIncidentArray = $incidentController->getAllOpenIncidents();
+                foreach($openIncidentArray as $row ){
+            ?>
+                <tr style="height: 70px;text-align:center;" title="Information of incidents filed by user 'cco1' ">
+                    <?php if($row["cco_username"] == $username){?>
+                    <th scope="row"><?php echo $row["incidentId"]; ?></th>
+                    <td><?php echo $row["name"]; ?></td>
+                    <td><?php echo $row["mobileNo"];  ?></td>
+                    <td><?php echo $row["location"]; ?></td>
+                    <td><?php echo $row["emergencyType"]; ?></td>
+                    <td><?php echo $row["typeOfAssistance"]; ?></td>
+                    <td><?php echo $row["fileDateTime"]; ?></td>
+            <?php
+                }
+                }
+            ?>
+                </tr>
+            </tbody>
+            </table>
+
+            <p>&nbsp;</p>
+            <hr>
+
+        </div>
+        </div>
+        </div>
+        </div>
+    </section>
+
+
+    <!----------Footer----------->
+    <div class = "main-content">
+        <?php include('../includes/footer.php');?>
+    </div>
+</body>
+</html>

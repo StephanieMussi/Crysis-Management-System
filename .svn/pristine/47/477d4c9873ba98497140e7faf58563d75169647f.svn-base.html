@@ -1,0 +1,31 @@
+<html>
+<body>
+	<!----------------View Incident List to Notify Agency-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-12">
+		<h3 class="label">Notify Agency</h3>
+		<!--------Table Filter----------->
+		<center>
+			<a href="cmo_send_sms_view_all.php" class="btn btn-outline-success">All</a>
+			<a href="cmo_send_sms_view_fire.php" class="btn btn-outline-danger">Fire</a>
+			<a href="cmo_send_sms_view_gas_leak.php" class="btn btn-outline-secondary">Gas Leak</a>
+			<a href="cmo_send_sms_view_terrorist_attack.php" class="btn btn-outline-warning">Terrorist Attack</a>
+			<a href="cmo_send_sms_view_traffic_accident.php" class="btn btn-outline-info">Traffic Accident</a>
+			<a href="cmo_send_sms_view_natural_disaster.php" class="btn btn-outline-dark">Natural Disaster</a>
+			<a href="cmo_send_sms_view_others.php" class="btn btn-outline-primary">Others</a>	
+		</center>
+		<?php
+			if(isset($_GET['result'])){
+				if($_GET['result'] == 'success'){
+					echo '<p class="resultSuccess" style="color:green">Request has been submitted successfully.</p>';
+				}
+			}
+		?>
+	</div>
+	</div>
+	</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<?php
+
+
+include('../classes/incident.php');
+include('../script/cmo_dbh.php');
+
+//change to notify = 0 and set to 1
+
+$sql = "SELECT * FROM severeincident WHERE HasNotify LIKE 'false%' AND pmo_username LIKE 'pmo%';";
+$result2 = mysqli_query($conn, $sql);
+
+$dbdata= array();
+
+while ( $row = $result2->fetch_assoc())  {
+    $dbdata[]=$row;
+}
+
+$resultCheck = mysqli_num_rows($result2);
+if($resultCheck!=0) {
+
+
+    $sql = "SELECT emergencyType FROM incident WHERE incidentId =" . $dbdata[0]['incidentId'] . ";";
+    $result1 = mysqli_query($conn, $sql);
+
+    $dbdata2 = array();
+
+    while ( $row = $result1->fetch_assoc())  {
+        $dbdata2[]=$row;
+    }
+
+    echo json_encode($dbdata2);
+
+    $sql2 = "UPDATE severeincident SET HasNotify = 'true' WHERE HasNotify LIKE 'false%'AND pmo_username LIKE 'pmo%';";
+    $result = mysqli_query($conn, $sql2);
+
+}else{
+
+    echo "NIL";
+}
+
+?>

@@ -1,0 +1,245 @@
+<html>
+<head>
+	<!----------Header----------->
+	<?php include('../classes/incidentController.php'); ?>
+	<?php include('../classes/severeCaseController.php'); ?>
+	<?php include('cmo_header.php');?>
+</head>
+<body onload="fillFunction();">
+	<!----------Top Navigation Bar-------->
+	<?php include('cmo_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('cmo_side_nav_bar.php');?>
+
+	<!----------------Publish Incident-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-12">
+		<h3 class="label">Publish Incident</h3>
+	</div>
+	</div>
+	</div>
+	</div>
+	<?php
+		if(isset($_GET['publishIncident'])!= true){
+			header("Location: cmo_publish_incident.php");
+			exit();
+		}
+
+		$incidentController = new incidentController();
+		$incidentId = $_GET['incidentId'];
+		$result = $incidentController->getSpecificIncident($incidentId); //returns incident obj
+
+		if($result == 'viewSentRequestError'){
+			echo '<p class="viewSentRequestError" style="color:red">Database execution error. Please try again later</p>';
+		}
+		else if($result == 'sqlError'){
+			echo '<p class="sqlError" style="color:red">Database connection error. Please try again later</p>';
+		}
+	?>
+
+	<!---------Incident Details--------->
+	<div class = "main-content">
+	<div class="col-md-12">	
+		<form name="form" id="formId" action="" method="POST" onsubmit="return validateForm()">
+			<table class="table table-borderless">
+				<col class="wide">
+				<tr>
+					<td>
+						<label class="boldLbl">Incident ID:</label>
+					</td>
+					<td>
+						<input type ="text" name="incidentId" style="border: none" readonly value="<?php echo($incidentId); ?>"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Name:</label>
+					</td>
+					<td>
+						<?php echo($result->getName()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Mobile No.:</label>
+					</td>
+					<td>
+						<?php echo($result->getMobileNo()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Location:</label>
+					</td>
+					<td>
+						<input type ="hidden" id="locationId" name="location" value="<?php echo($result->getLocation()); ?>"/><?php echo($result->getLocation()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Emergency Type:</label>
+					</td>
+					<td>
+						<input type ="hidden" id="emergencyTypeId" name="emergencyType" value="<?php echo($result->getEmergencyType()); ?>"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Type of Assistance:</label>
+					</td>
+					<td>
+						<?php echo($result->getTypeOfAssistance()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Remarks:</label>
+					</td>
+					<td>
+						<?php echo($result->getRemarks()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">File Date Time:</label>
+					</td>
+					<td>
+						<?php echo($result->getFileDateTime()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Filed By:</label>
+					</td>
+					<td>
+						<?php 
+							if($result->getCcoUsername() == ""){
+								echo "Public";
+							}
+							else{
+								echo ($result->getCcoUsername());
+							}
+						?>
+					</td>
+				</tr>
+
+				<!----------------------Severe Case Info---------------------->
+				<?php
+					$severeCaseController = new severeCaseController();
+					$result1 = $severeCaseController->getSpecificSevereCase($incidentId); 
+					//returns severeCase obj if exists else returns false
+					$hasPmoResponded = $severeCaseController->hasPmoResponded($incidentId);
+
+					if($result1 != false && $hasPmoResponded == true){ //i.e.: the incident is severe and pmo responded
+				?>
+						<tr>
+							<td>
+								<label class="boldLbl">Severity Level:</label>
+							</td>
+							<td>
+								<?php echo($result1->getSeverityLevel()); ?>
+							</td>
+						</tr>
+						<tr>
+						<td>
+							<label for="proposedSuggestion" class="boldlbl">PMO Response:</label>
+						</td>
+						<td>
+							<?php
+								if($result1->getProposedSuggestion() != NULL){ //i.e.: pmo rejected
+									echo($result1->getProposedSuggestion());
+								}
+								else{
+									echo($result1->getSuggestionOnAction());	
+								}
+							?>
+						</td>
+					</tr>	
+				<?php
+					}
+				?>
+
+				<!--------------------CMO input------------------------>
+				<tr>
+					<td>
+						<label class="boldLbl">Post:</label>
+					</td>
+					<td>
+						<textarea name="infoInput" class="infoInput" id="infoInput" rows ="6" cols="40" maxlength="140" onchange="verifyInfoInput()"><?php echo($result->getEmergencyType()); ?> incident at <?php echo($result->getLocation()); ?> on <?php echo($result->getFileDateTime()); ?></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td>
+						<div id="infoInput_error" class="errorMsg"></div>
+					</td>
+				</tr>
+
+				<!----------------------Buttons---------------------->
+				<tr>
+					<td>
+						<a href="cmo_publish_incident.php" class="btn btn-light">Back</a>
+					</td>
+					<td>
+						<button type="submit" class="btn btn-primary" id="pubFB" formaction="..\script\fb_index.php">Publish to Facebook</button>
+					</td>
+					<td>
+						<button type="submit" class="btn btn-primary" id="pubTW" formaction="..\script\twitter_index.php">Publish to twitter</button>
+				</tr>
+			</table>
+		</form>
+	</div>
+	</div>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+</body>
+</html>
+
+
+<!---------------Client-side Validation----------------->
+<script>
+function fillFunction(){
+	var emergencyType = document.getElementById('emergencyType'); 
+	var location = document.getElementById('location');
+
+	emergencyType.value = '<?php echo($result->getEmergencyType()); ?>';
+	location.value = '<?php echo($result->getLocation()); ?>';
+
+}
+
+function submitForm(action) {
+    var form = document.getElementById('formId');
+    form.action = action;
+    form.submit();
+}
+
+function verifyInfoInput(){
+	var infoInput = document.getElementById('infoInput');
+	var infoInput_error = document.getElementById('infoInput_error');
+	if(infoInput.value != ''){
+		infoInput.blur();
+		infoInput_error.innerHTML = "";
+		return true;
+	}
+}
+
+function validateForm(){
+	// initialize input elements
+	var infoInput = document.getElementById('infoInput');
+	var infoInput_error = document.getElementById('infoInput_error');
+	
+	if(infoInput.value == ""){
+		infoInput_error.textContent = "Please enter the content of your post";
+		infoInput.focus();
+		infoInput.select();
+		return false;
+	}
+}
+</script>

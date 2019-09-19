@@ -1,0 +1,155 @@
+*
+{
+	margin: 0;
+	padding: 0;
+}
+body
+{
+	font-family: sans-serif;
+}
+#nav-bar{
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+#banner{
+	background: #ECECEC
+}
+.promo-title{
+	font-size: 40px;
+	font-weight: 600;
+	margin-top: 100px;
+}
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+#card-view{
+	margin-top:50px;
+}
+.form-group{
+	margin-top: 10px;
+}
+.label
+{
+	margin-top: 20px;
+}
+.form-group-check
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.mt-auto, .my-auto {
+    margin-top: auto;
+}
+.pb-3, .py-3 {
+    padding-bottom: 1rem;
+}
+#username_error, #password_error, #name_error, #mobile_no_error, #location_error, #tnc_error, #others_error, .loginError, .sqlError
+{
+	color: #FF0000;
+}
+#emergency_others
+{
+	margin-top: 10px;
+}
+.confirm_label{
+	font-weight: bold;
+}
+
+
+
+/*All the styles after this comment belongs to the map for file incident page*/
+#map1 {
+        height: 100%;
+    }
+.controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 0px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 300px;
+}
+
+#pac-input:focus {
+    border-color: #4d90fe;
+}
+
+.pac-container {
+    font-family: Roboto;
+}
+
+#type-selector {
+    color: #fff;
+    background-color: #4d90fe;
+    padding: 5px 11px 0px 11px;
+}
+
+#type-selector label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+}
+
+
+/* Map Styles */
+#header {
+    font-size: 2em;
+    font-weight: bold;
+}
+/* Default text style (dts) */
+.dts {
+    width: 80%;
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+
+/* Always set the map height explicitly to define the size of the div
+* element that contains the map. */
+#map {
+width: 50%;
+height: 50%;
+margin-left: 25%;
+margin-right: 25%;
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+height: 100%;
+margin: 0;
+padding: 0;
+}
+
+.firstHeading {
+    color:rgb(94, 128, 231);
+    font-size: 16px;
+    margin: 5px 0px;
+}
+
+.firstHazeHeading {
+    color:rgb(71, 76, 90);
+    font-size: 16px;
+    margin: 5px 0px;
+}
+
+.bodyHazeContent {
+    color:rgb(111, 118, 138);
+    font-size: 14px;
+}

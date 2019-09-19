@@ -1,0 +1,186 @@
+<html>
+<?php include('../classes/severeCaseNotificationController.php'); ?>
+<?php include('../classes/incidentController.php'); ?>
+<?php include('../classes/severeCaseController.php'); ?>
+<head>
+	<!----------Header----------->
+	<?php include('pmo_header.php');?>
+</head>
+<body>
+	<!---------------------Navigation bar------------------------->
+	<!----------Top Navigation Bar-------->
+	<?php include('pmo_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('pmo_side_nav_bar.php');?>
+
+	<!----------------View Severe Case Notification-------------->
+	<section>
+		<div class = "main-content">
+		<div class="container">
+		<div class="row">
+		<div class="col-md-12">
+		<h3 class="label">View Severe Case Notification</h3>
+		<?php
+			if(isset($_GET['view']) != true || isset($_GET['notificationId']) != true){
+				header("Location: pmo_main.php");
+				exit();
+			}
+
+			$notificationId = $_GET['notificationId'];
+			$severeCaseNotificationController = new severeCaseNotificationController();
+			$result = $severeCaseNotificationController->getSpecificSevereCaseNotification($notificationId);
+			//returns severeCaseNotification obj
+			if($result == false){
+				header("Location: pmo_main.php");
+				exit();
+			}
+
+			$incidentId = $result->getIncidentId();
+			$incidentController = new incidentController();
+			$result1 = $incidentController->getSpecificIncident($incidentId);
+			if($result1 == "viewSentRequestError"){
+				header("Location: pmo_main.php");
+				exit();
+			}
+
+			$severeCaseController = new severeCaseController();
+			$result2 = $severeCaseController->getSpecificSevereCase($incidentId);
+			if($result != true){
+				header("Location: pmo_main.php");
+				exit();
+			}
+		?>
+		<form name="form">
+			<table class="table table-borderless">
+				<tr>
+					<td>
+						<label class="boldLbl">Incident ID:</label>
+					</td>
+					<td>
+						<?php echo($incidentId); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Name:</label>
+					</td>
+					<td>
+						<?php echo($result1->getName()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Mobile No.:</label>
+					</td>
+					<td>
+						<?php echo($result1->getMobileNo()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Location:</label>
+					</td>
+					<td>
+						<?php echo($result1->getLocation()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Emergency Type:</label>
+					</td>
+					<td>
+						<?php echo($result1->getEmergencyType()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Type of Assistance:</label>
+					</td>
+					<td>
+						<?php echo($result1->getTypeOfAssistance()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Remarks:</label>
+					</td>
+					<td>
+						<?php echo($result1->getRemarks()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">File Date Time:</label>
+					</td>
+					<td>
+						<?php echo($result1->getFileDateTime()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Filed By:</label>
+					</td>
+					<td>
+						<?php 
+							if($result1->getCcoUsername() == ""){
+								echo "Public";
+							}
+							else{
+								echo ($result1->getCcoUsername());
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Suggestion on Action:</label>
+					</td>
+					<td>
+						<?php echo($result2->getSuggestionOnAction()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Severity Level:</label>
+					</td>
+					<td>
+						<?php echo($result2->getSeverityLevel()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Request Sent By:</label>
+					</td>
+					<td>
+						<?php echo($result2->getCmoUsername()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<a href="pmo_main.php" class="btn btn-light">Back</a>
+					</td>
+				</tr>
+		</table>
+		</form>
+		</div>
+		</div>
+		</div>
+		</div>
+	</section>
+
+	<?php
+		$notificationControllerObj = unserialize($_SESSION['notificationControllerObj']);
+		//once this page is opened, means user has already clicked on the notification
+		//by opening this page, it also means that the user has already "read" the notification content in this page
+		//therefore, since it has already been read, so there's no point in keeping the notification and so, it is deleted from the db
+		$result2 = $notificationControllerObj->deleteNotification($notificationId);
+	?>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+	
+</body>
+</html>

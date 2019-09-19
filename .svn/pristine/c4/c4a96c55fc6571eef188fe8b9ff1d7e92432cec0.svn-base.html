@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="map-style.css" rel="stylesheet">
+  </head>
+  <body>
+  <div id="header" class="dts">Map</div>
+	<p class="dts">
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ullamcorper, erat vitae venenatis auctor, dolor magna gravida eros, quis posuere sem leo vel enim. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum eget metus a lacus blandit molestie a eu tellus. Morbi malesuada ante at mi congue, ac vehicula nisl condimentum. Vestibulum eu felis laoreet, pulvinar nulla ut, tincidunt erat. Vestibulum nisl nulla, convallis quis erat vel, maximus dapibus neque. Vivamus malesuada dui sed accumsan hendrerit. Aenean venenatis ipsum ut massa venenatis, quis aliquam ligula congue. Fusce pellentesque lacinia arcu vitae varius. Morbi non orci eget tellus sollicitudin imperdiet vel vitae orci. Vivamus porta, massa nec gravida luctus, nisi nulla consectetur sem, a imperdiet nunc turpis aliquam eros. Nunc condimentum sit amet turpis vel ultricies. Phasellus commodo pharetra purus, vel pharetra neque sagittis eget. Ut aliquet mattis urna eget vehicula.
+	</p>
+	<p class="dts">
+Quisque eu imperdiet ex. Nunc accumsan ligula sit amet dictum vestibulum. Morbi risus mi, tempor id risus nec, ornare vulputate orci. Nunc sed suscipit massa. In sed faucibus lacus, in aliquam lorem. Suspendisse erat ipsum, ultrices et sollicitudin nec, cursus ac arcu. Nam vitae tortor sed tortor semper commodo. Pellentesque ullamcorper efficitur arcu sed convallis.
+	</p>
+	Dengue: <input type="radio" name ="radiogroup" id="rbDengue" value="1" />
+	Haze: <input type="radio" name ="radiogroup" id="rbHaze" value="2" />
+	Crises: <input type="radio" name ="radiogroup" id="rbCrises" value="3" />
+  Weather: <input type="radio" name ="radiogroup" id="rbWeather" value="4" />
+  <div id="map"></div>
+    <script src="map-script.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-QzO882Yq3gtz_m7yjxHXwhJhFMTSW2c&callback=initMap"
+    async defer></script>
+  </body>
+</html>

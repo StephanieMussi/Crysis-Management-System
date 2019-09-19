@@ -1,0 +1,89 @@
+<html>
+<head>
+	<?php include('../classes/incidentController.php'); ?>
+	<?php include('../classes/severeCaseController.php'); ?>
+
+	<!----------Header----------->
+	<?php include('pmo_header.php');?>
+</head>
+<body>
+	<!----------Top Navigation Bar-------->
+	<?php include('pmo_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('pmo_side_nav_bar.php');?>
+
+	<!----------------Approve incident list-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="col-md-12">
+	<div class="row">
+		<h3 class="label">Incident List Awaiting for Approval</h3>
+	</div>
+	</div>
+	</div>
+	</div>
+	<!------------Incident table--------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-12">	
+		<?php
+			if(isset($_GET['result'])){
+				if($_GET['result'] == 'success'){
+					echo '<p class="resultSuccess" style="color:green">Incident has been submitted successfully.</p>';
+				}
+			}
+		?>
+		<p>These are the list of incidents that are awaiting for approval</p>
+		<table class="table" id="table">
+			<thead class="thead-light">
+			<tr>
+				<th scope="col" width="5%">ID</th>
+				<th scope="col">Location</th>
+				<th scope="col">Emergency Type</th>
+				<th scope="col">Assistance Type</th>
+				<th scope="col">Severity Level</th>
+				<th scope="col" width="15%">Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+				$incidentController = new incidentController();
+				$openIncidentArray = $incidentController->getAllOpenIncidents();
+				/* From incident db table
+				0: incidentId, 1: name, 2: mobileNo, 3: location, 4: emergencyType, 5: typeOfAssistance, 6: remarks, 7: fileDateTime, 8: cco_username, 9: status, 10: statusDateTime
+				*/	
+				for($m=0; $m< sizeof($openIncidentArray); $m++){
+					$severeCaseController = new severeCaseController();
+					$isSevere = $severeCaseController->isSevere($openIncidentArray[$m][0]);
+					$hasPmoResponded = $severeCaseController->hasPmoResponded($openIncidentArray[$m][0]);
+					if($isSevere == true && $hasPmoResponded == false){
+						$result = $severeCaseController->getSpecificSevereCase($openIncidentArray[$m][0]); //returns severeCaseObj
+			?>
+						<tr>
+							<th scope="row"><?php echo $openIncidentArray[$m][0]; ?></th>
+							<td><?php echo $openIncidentArray[$m][3]; ?></td>
+							<td><?php echo $openIncidentArray[$m][4]; ?></td>
+							<td><?php echo $openIncidentArray[$m][5]; ?></td>
+							<td><?php echo $result->getSeverityLevel(); ?></td>
+							<td><a href="pmo_view_more_info.php?viewMore=true&incidentId=<?php echo $openIncidentArray[$m][0]; ?>" class="btn btn-info">View More</a></td>	
+						</tr>
+			<?php
+					}
+				}
+			?>
+		</tbody>
+	</table>
+	</div>
+	</div>
+	</div>
+	</div>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+	
+</body>
+</html>

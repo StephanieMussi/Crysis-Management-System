@@ -1,0 +1,53 @@
+<?php
+	include('cmo_dispatch.php');
+	class cmo_dispatchController{
+		//other methods 
+        public function insertDetails($dispatch){ //pass dispatch obj
+            include('../script/cmo_dbh.php');
+            //query to insert record into dispatch db
+            $sql = "INSERT INTO dispatch(cmo_username, incidentId, dispatchMsg) VALUES(?,?,?)";
+            
+            $stmt = mysqli_stmt_init($conn);
+            if(!mysqli_stmt_prepare($stmt,$sql)){
+                return "sqlError";
+            }
+    
+            mysqli_stmt_bind_param($stmt, "sss", $dispatch->getCmoUsername(), $dispatch->getIncidentId(), $dispatch->getDispatchMsg());
+            
+            $result = mysqli_stmt_execute($stmt);
+            if($result == true){ //insert success
+                return mysqli_insert_id($conn);
+            }
+            else{
+                return "insertError";
+            }
+        } 
+
+        public function hasDispatched($incidentId){ //this function checks if msg has been dispatched previously
+            include('../script/cmo_dbh.php');
+            //query to get all incidents
+            $sql = "SELECT * FROM dispatch WHERE incidentId=?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $incidentId);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            $row = mysqli_fetch_assoc($result);
+
+            if($row != NULL){ 
+            //i.e.: means there is record in dispatch db with this incidentId. so, it has already been dispatched
+                return true; 
+            }
+            else{
+                return false;
+            }
+        }
+	}
+?>

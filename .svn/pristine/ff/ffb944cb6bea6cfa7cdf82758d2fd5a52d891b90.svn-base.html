@@ -1,0 +1,97 @@
+<html>
+<head>
+	<!----------Header----------->
+	<?php include('cco_header.php');?>
+</head>
+<body>
+	<!----------Top Navigation Bar-------->
+	<?php include('cco_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('cco_side_nav_bar.php');?>
+	
+	<!------------------Dashboard section------------------>
+    <section>
+        <div class = "main-content">
+        <div class="container">
+        <div class="row">
+            <h1 class="label">Dashboard</h1>
+            <p>
+                <a href="#C1">View Statistics</a>
+                &nbsp
+                &nbsp
+                <a href="#C2">View Status</a>
+                &nbsp
+                &nbsp
+                <a href="#C3">View Area Statistics</a>
+            </p>
+            <p>&nbsp;</p>
+            <hr>
+
+            <h3 class="label" id="C1">Incident Statistics</h3>
+            <p>&nbsp;</p>
+
+            <table style="height: 140px;padding: 2px" border="5" width="544">
+            <caption>Total number of incidents</caption>
+            <tbody>
+                <tr style="height: 70px;" >
+                    <th style="width: 70px; text-align: center; height: 70px;">Fire</th>
+                    <th style="width: 70px; text-align: center; height: 70px;">Gas leak</th>
+                    <th style="width: 70px; text-align: center; height: 70px;">Natrual disasters</th>
+                    <th style="width: 70px; text-align: center; height: 70px;">Traffic incidents</th>
+                    <th style="width: 70px; text-align: center; height: 70px;">Terrorist attack</th>
+                    <th style="width: 70px; text-align: center; height: 70px;">Others</th>
+                </tr>
+                <tr style="height: 70px;" >
+                    <td style="width: 70px; text-align: center; height: 70px;" title="Total number of fire">&nbsp;</td>
+                    <td style="width: 70px; text-align: center; height: 70px;" title="Total number of gas leak">&nbsp;</td>
+                    <td style="width: 70px; text-align: center; height: 70px;" title="Total number of natural disasters">&nbsp;</td>
+                    <td style="width: 70px; text-align: center; height: 70px;" title="Total number of traffic accident">&nbsp;</td>
+                    <td style="width: 70px; text-align: center; height: 70px;" title="Total number of traffic incidents">&nbsp;</td>
+                    <td style="width: 70px; text-align: center; height: 70px;" title="Total number of other incidents">&nbsp;</td>
+                </tr>
+            </tbody>
+            </table>
+
+            <p>&nbsp;</p>
+            <hr>
+
+            <h3 class="label" id="C2">Incident Status</h3>
+            <p>&nbsp;</p>
+
+            <table style="height: 140px; padding: 2px" border="5" width="544" >
+            <tbody>
+                <tr style="height: 70px;">
+                    <th style="width: 210px; text-align: center; height: 70px;">Confirmed</th>
+                    <th style="width: 210px; text-align: center; height: 70px;">Unconfirmed</th>
+                </tr>
+                <tr style="height: 70px;">
+                    <td style="width: 70px; text-align: center; height: 70px;" title="Total number of confirmed incidents">&nbsp;</td>
+                    <td style="width: 70px; text-align: center; height: 70px;" title="Total number of unconfirmed incidents">&nbsp;</td>
+                </tr>
+            </tbody>
+            </table>
+
+            <p>&nbsp;</p>
+            <hr>
+
+            <h3 class="label" id="C3">Area Statistics</h3>
+            <p>&nbsp;</p>
+            <ol>
+                <li>&nbsp;</li>
+                <li>&nbsp;</li>
+                <li>&nbsp;</li>
+            </ol>
+
+        </div>
+        </div>
+        </div>
+    </section>
+	
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+</body>
+</html>

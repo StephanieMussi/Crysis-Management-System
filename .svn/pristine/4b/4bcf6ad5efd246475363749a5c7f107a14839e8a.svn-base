@@ -1,0 +1,53 @@
+<?php
+	if(isset($_POST['btn_submit'])){
+		include('../classes/severeCase.php');
+		include('../classes/notificationController.php');
+		include('../classes/severeCaseNotificationController.php');
+		
+		$severeCase = new severeCase();
+
+		$severeCase->incidentId = $_POST['incidentId'];
+		$severeCase->suggestionOnAction = $_POST['suggestionOnAction'];
+		$severeCase->severityLevel = $_POST['severityLevel'];
+
+		session_start();
+		$username = $_SESSION['username'];
+		$severeCase->cmo_username = $username;
+		
+		$result = $severeCase->insertDetails();
+
+		if($result == "sqlError"){
+			header("Location: ../cmo/cmo_send_request.php?error=sqlError&incidentId=".$severeCase->getIncidentId()."&suggestionOnAction=".$severeCase->getSuggestionOnAction()."&severityLevel=".$severeCase->getSeverityLevel());
+			exit();
+		}
+		
+		else if($result == 'insertError'){ //insertError
+			header("Location: ../cmo/cmo_send_request.php?error=insertError&incidentId=".$severeCase->getIncidentId()."&suggestionOnAction=".$severeCase->getSuggestionOnAction()."&severityLevel=".$severeCase->getSeverityLevel());
+			exit();
+		}
+
+		else{ //insert success
+			//only when insertion is successful, notification obj will be created
+			$notification = new notification();
+			$notification->setType('severeCaseNotification');
+			$notification->setMsg('A severe case has been filed');
+			$notification->setTarget('pmo');
+			
+			$notificationController = new notificationController();
+			$result = $notificationController->insertDetails();
+			
+			//create severeCaseNotification obj
+			$severeCaseNotification = new severeCaseNotification();
+			$severeCaseNotification->setIncidentId($_POST['incidentId']);
+			$severeCaseNotification->setNotificationId($result);
+
+			$severeCaseNotificationController = new severeCaseNotificationController();
+			$severeCaseNotificationController->insertDetails();
+
+			header("Location: ../cmo/cmo_view_incident_list.php?result=success");
+		}
+	}
+	else{
+		header("Location: ../cmo/cmo_view_incident_list.php");
+	}
+?>

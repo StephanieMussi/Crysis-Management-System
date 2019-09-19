@@ -1,0 +1,60 @@
+<?php
+	class severeCase { 
+		//attributes
+    	protected $incidentId;
+    	protected $suggestionOnAction;
+    	protected $proposedSuggestion;
+    	protected $severityLevel;
+    	protected $pmo_username;
+    	protected $cmo_username;
+
+    	//getter and setter methods
+    	public function getIncidentId(){
+    		return $this->incidentId;
+    	}
+
+   	 	public function setIncidentId($incidentId){ 
+        	 $this->incidentId = $incidentId;
+    	}
+
+    	public function getSuggestionOnAction(){
+    		return $this->suggestionOnAction;
+    	}
+
+   	 	public function setSuggestionOnAction($suggestionOnAction){ 
+        	 $this->suggestionOnAction = $suggestionOnAction;
+    	}
+
+    	public function getProposedSuggestion(){
+    		return $this->proposedSuggestion;
+    	}
+
+   	 	public function setProposedSuggestion($proposedSuggestion){ 
+        	 $this->proposedSuggestion = $proposedSuggestion;
+    	}
+
+    	public function getSeverityLevel(){
+    		return $this->severityLevel;
+    	}
+
+   	 	public function setSeverityLevel($severityLevel){ 
+        	 $this->severityLevel = $severityLevel;
+    	}
+
+    	public function getPmoUsername(){
+    		return $this->pmo_username;
+    	}
+
+   	 	public function setPmoUsername($pmo_username){ 
+        	 $this->pmo_username = $pmo_username;
+    	}
+
+    	public function getCmoUsername(){
+    		return $this->cmo_username;
+    	}
+
+   	 	public function setCmoUsername($cmo_username){ 
+        	 $this->cmo_username = $cmo_username;
+    	}
+	}
+?>

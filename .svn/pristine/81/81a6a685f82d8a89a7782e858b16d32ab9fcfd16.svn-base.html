@@ -1,0 +1,39 @@
+<html>
+<body>
+	<!----------------View Incident List-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-12">
+		<h3 class="label">Incident List</h3>
+		<!--------Table Filter----------->
+		<?php
+			if(isset($_GET['result'])){
+				if($_GET['result'] == 'success'){
+					echo '<p class="resultSuccess" style="color:green">Request has been submitted successfully.</p>';
+				}
+				else if($_GET['result'] == 'successfulInsertForNotSevere'){
+					echo '<p class="resultSuccess" style="color:green">Incident has been marked as not severe.</p>';
+				}
+			}
+			else if(isset($_GET['error'])){
+				if($_GET['error'] == 'sqlError'){
+					echo '<p class="sqlError" style="color:red">Database connection error. Please try again later</p>';
+				}
+				else if($_GET['error'] == 'viewSentRequestError'){
+					echo '<p class="viewSentRequestError" style="color:red">Database execution error. Please try again later</p>';
+				}
+			}
+		?>
+		<center>
+			<a href="cmo_view_incident_list.php" class="btn btn-outline-primary">All</a>
+			<a href="cmo_view_incident_list_view_pending.php" class="btn btn-outline-info">Pending</a>
+			<a href="cmo_view_incident_list_view_notified.php" class="btn btn-outline-success">Notified</a>
+			<a href="cmo_view_incident_list_view_closed.php" class="btn btn-outline-secondary">Closed</a>
+		</center>
+	</div>
+	</div>
+	</div>
+	</div>
+</body>
+</html>

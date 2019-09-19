@@ -1,0 +1,234 @@
+<html>
+<head>
+	<?php include('../classes/cmoController.php'); ?>
+
+	<!----------Header----------->
+	<?php include('cmo_header.php');?>
+</head>
+<body onload="autofill()">
+	<!----------Top Navigation Bar-------->
+	<?php include('cmo_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('cmo_side_nav_bar.php');?>
+
+	<!----------------Send Incident Request Form-------------->
+	<section>
+		<div class = "main-content">
+		<div class="container">
+		<div class="row">
+		<div class="col-md-8">
+		<h3 class="label">Send Incident Request to PMO</h3>
+		<p>By submitting this form, the incident will be sent and reflected onto the PMO dashboard</p>
+
+		<?php
+			if(isset($_GET['error'])){
+				if($_GET['error'] == "insertError"){
+					echo '<p class="insertError" style="color:red">Database execution error. Please try again later</p>';
+				}
+				else if($_GET['error'] == "sqlError"){
+					echo '<p class="sqlError" style="color:red">Database connection error. Please try again later</p>';
+				}
+			}
+			else if($_GET['sendRequest'] != 'true'){ //if this page is not a result of clicking send request button on view incident list page
+				header("Location: cmo_view_incident_list.php");
+				exit();
+			}
+		?>
+
+		<?php
+			$incidentController = new cmoController();
+			//$incidentController->setAccessToken("cmo");
+			$incidentId = $_GET['incidentId'];
+			$result = $incidentController->getSpecificIncident($incidentId);
+
+			if($result == 'viewSentRequestError'){
+				echo '<p class="viewSentRequestError" style="color:red">Database execution error. Please try again later</p>';
+			}
+			else if($result == 'sqlError'){
+				echo '<p class="sqlError" style="color:red">Database connection error. Please try again later</p>';
+			}
+		?>
+		<form name="form" method="post" action="..\script\cmo_send_request.php" onsubmit="return validateForm()">
+			<table class="table table-borderless">
+				<tr>
+					<td>
+						<label class="boldLbl">Incident ID:</label>
+					</td>
+					<td>
+						<?php echo($incidentId); ?>
+						<input type="hidden" id="incidentId" name="incidentId"></input>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Location:</label>
+					</td>
+					<td>
+						<?php echo($result->getLocation()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Unit Number:</label>
+					</td>
+					<td>
+						<?php echo($result->getUnitNo()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Emergency Type:</label>
+					</td>
+					<td>
+						<?php echo($result->getEmergencyType()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Type of Assistance:</label>
+					</td>
+					<td>
+						<?php echo($result->getTypeOfAssistance()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Remarks:</label>
+					</td>
+					<td>
+						<?php echo($result->getRemarks()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">File Date Time:</label>
+					</td>
+					<td>
+						<?php echo($result->getFileDateTime()); ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="boldLbl">Filed By:</label>
+					</td>
+					<td>
+						<?php 
+							if($result->getCcoUsername() == ""){
+								echo "Public";
+							}
+							else{
+								echo ($result->getCcoUsername());
+							}
+						?>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label class="boldLbl">Severity Level</label><br/>
+						<small>1: Least Severe, 5: Most Severe</small>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<select id="severityLevel" name = "severityLevel">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label class="boldLbl">Suggestion on Action</label>
+					</td>
+				</tr>
+				<tr>
+					<td colspan=2>
+						<textarea type="text" class="form-control" id="suggestionOnAction" placeholder="" name="suggestionOnAction" onchange="verifySuggestion()"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td colspan=2>
+						<div id="suggestion_error" class="errorMsg"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<a href="cmo_view_more.php?viewMore=true&incidentId=<?php echo($incidentId); ?>" class="btn btn-light">Back</a>
+					</td>
+					<td>
+						<button type="submit" name="btn_submit" class="btn btn-primary rightmost">Submit</button>
+					</td>
+				</tr>
+			</table>
+		</form>
+		</div>
+		</div>
+		</div>
+		</div>
+	</section>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+</body>
+</html>
+
+
+
+
+<!---------------Client-side Validation----------------->
+<script>
+//autofill (e.g.: if insert into severe case db fails, suggestion is being passed back as querystring and this function autofill the suggestion)
+function autofill(){
+	var incidentId = document.getElementById('incidentId');
+	incidentId.value = getParameterByName('incidentId');
+
+	if(getParameterByName('error') == 'sqlError' || getParameterByName('error') == 'insertError'){
+		var severityLevel = document.getElementById('severityLevel');
+		severityLevel.value = getParameterByName('severityLevel');
+		var suggestion = document.getElementById('suggestionOnAction');
+		suggestion.value = getParameterByName('suggestionOnAction');
+	}
+}
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&]*)|&|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+//validate suggestionOnAction 
+function verifySuggestion(){
+	var suggestion = document.getElementById('suggestionOnAction');
+	var suggestion_error = document.getElementById('suggestion_error');
+	if(suggestion.value != ""){
+		suggestion.blur();
+		suggestion_error.innerHTML = "";
+		return true;
+	}
+}
+
+//validate entire form
+function validateForm(){
+	var suggestion = document.getElementById('suggestionOnAction');
+	var suggestion_error = document.getElementById('suggestion_error');
+	if(suggestion.value == ""){
+		suggestion_error.textContent = "Please enter a suggestion";
+		suggestion.focus();
+		suggestion.select();
+		return false;
+	}
+	return true;
+}
+</script>

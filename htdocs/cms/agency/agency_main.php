@@ -1,0 +1,166 @@
+<html>
+<head>
+	<?php include('../classes/agencyController.php'); ?>
+	
+	<!----------Header----------->
+	<?php include('agency_header.php');?>
+
+</head>
+<body>
+	<!----------Top Navigation Bar-------->
+	<?php include('agency_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('../script/side_nav_bar.php');?>
+	
+	<!------------------Dashboard section------------------>
+	<section>	
+		<div class = "main-content">
+		<div class="container">
+		<div class="row">
+		<div class="col-md-12">
+			<h3 class="label">Dashboard</h3>
+			<br/>
+
+
+		<!------------------(1)Charts section - SUMMARY OF INCIDENTS------------------>
+
+		<!------------------(a)Array of Datapoints Section------------------>
+		<?php
+ 		
+ 		$agencyController = new agencyController();
+
+		$dataPoints = array(
+		array("label"=> "Fire", "y"=> $agencyController->getNumberOfFire()),
+		array("label"=> "Gas Leak", "y"=> $agencyController -> getNumberOfGasLeak()),
+		array("label"=> "Terrorist Attack", "y"=> $agencyController -> getNumberOfTerroristAttack()),
+		array("label"=> "Traffic Accident", "y"=> $agencyController -> getNumberOfTrafficAccident()),
+		array("label"=> "Natural Disaster", "y"=> $agencyController -> getNumberOfNaturalDisaster()),
+		array("label"=> "Others", "y"=> $agencyController->getNumberOfOthers()),
+		);
+	
+		?>
+		<!------------------(b)Display Chart------------------>
+		<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
+		<br/>
+		<br/>
+		<!------------------(2)Charts section - SUMMARY OF DEATHS AND INJURIES------------------>
+		<?php
+
+		/*------------------(a)Array of Datapoints Section------------------*/
+
+		/*------------------(ai)Number of Deaths----------*/
+		$dataPoints1 = array(
+		array("label"=> "Jan", "y"=> $agencyController -> getNumberOfDeath("January")),
+		array("label"=> "Feb", "y"=> $agencyController -> getNumberOfDeath("February")),
+		array("label"=> "Mar", "y"=> $agencyController -> getNumberOfDeath("March")),
+		array("label"=> "Apr", "y"=> $agencyController -> getNumberOfDeath("April")),
+		array("label"=> "May", "y"=> $agencyController -> getNumberOfDeath("May")),
+		array("label"=> "Jun", "y"=> $agencyController -> getNumberOfDeath("June")),
+		array("label"=> "Jul", "y"=> $agencyController -> getNumberOfDeath("July")),
+		array("label"=> "Aug", "y"=> $agencyController -> getNumberOfDeath("August")),
+		array("label"=> "Sep", "y"=> $agencyController -> getNumberOfDeath("September")),
+		array("label"=> "Oct", "y"=> $agencyController -> getNumberOfDeath("October")),
+		array("label"=> "Nov", "y"=> $agencyController -> getNumberOfDeath("November")),
+		array("label"=> "Dec", "y"=> $agencyController -> getNumberOfDeath("December")),
+		);
+
+		/*------------------(aii)Number of Injuries----------*/
+		$dataPoints2 = array(
+		array("label"=> "Jan", "y"=> $agencyController -> getNumberOfInjuries("January")),
+		array("label"=> "Feb", "y"=> $agencyController -> getNumberOfInjuries("February")),
+		array("label"=> "Mar", "y"=> $agencyController -> getNumberOfInjuries("March")),
+		array("label"=> "Apr", "y"=> $agencyController -> getNumberOfInjuries("April")),
+		array("label"=> "May", "y"=> $agencyController -> getNumberOfInjuries("May")),
+		array("label"=> "Jun", "y"=> $agencyController -> getNumberOfInjuries("June")),
+		array("label"=> "Jul", "y"=> $agencyController -> getNumberOfInjuries("July")),
+		array("label"=> "Aug", "y"=> $agencyController -> getNumberOfInjuries("August")),
+		array("label"=> "Sep", "y"=> $agencyController -> getNumberOfInjuries("September")),
+		array("label"=> "Oct", "y"=> $agencyController -> getNumberOfInjuries("October")),
+		array("label"=> "Nov", "y"=> $agencyController -> getNumberOfInjuries("November")),
+		array("label"=> "Dec", "y"=> $agencyController -> getNumberOfInjuries("December")),
+		);
+
+		?>
+		<!------------------(b)Display Chart------------------>
+		<div id="injuryChartContainer" style="height: 370px; width: 100%;"></div>
+
+		<br/>
+		</div>
+		</div>
+		</div>
+		</div>
+	</section>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+
+	<!---------------Client-side Validation----------------->
+	<script>
+		window.onload = function () {
+ 
+		var chart = new CanvasJS.Chart("chartContainer", {
+		animationEnabled: true,
+		theme: "light2", // "light1", "light2", "dark1", "dark2"
+		title: {
+		text: "Summary of Incidents Occured"
+		},
+		axisY: {
+		title: "Number of Incidents",
+		includeZero: false
+		},
+		data: [{
+		type: "column",
+		dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
+		}]
+		});
+		chart.render();
+
+		var injurychart = new CanvasJS.Chart("injuryChartContainer", {
+		animationEnabled: true,
+		theme: "light2",
+		title:{
+		text: "Summary of Casualities"
+		},
+		legend:{
+		cursor: "pointer",
+		verticalAlign: "center",
+		horizontalAlign: "right",
+		itemclick: toggleDataSeries
+		},
+		data: [{
+		type: "column",
+		name: "Number of Deaths",
+		indexLabel: "{y}",
+		yValueFormatString: "0",
+		showInLegend: true,
+		dataPoints: <?php echo json_encode($dataPoints1, JSON_NUMERIC_CHECK); ?>
+		},{
+		type: "column",
+		name: "Number of Injuries",
+		indexLabel: "{y}",
+		yValueFormatString: "0",
+		showInLegend: true,
+		dataPoints: <?php echo json_encode($dataPoints2, JSON_NUMERIC_CHECK); ?>
+	}]
+});
+injurychart.render();
+ 
+function toggleDataSeries(e){
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	}
+	else{
+		e.dataSeries.visible = true;
+	}
+	injurychart.render();
+	}
+ 
+   }
+	
+</script>
+</body>
+</html>

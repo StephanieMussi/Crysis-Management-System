@@ -1,0 +1,9 @@
+- modified cms/cmo/confirm_publish_incident_page
+- removed cms/cmo/index.php
+- removed cms/cmo/src/
+
+- modified cms/script/index.php -> cms/script/fb_index.php [code slightly edited too]
+- added cms/script/twitter_index.php
+- added cms/script/vendor/
+- added cms/script/composer.json
+- added cms/script/composer.lock

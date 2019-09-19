@@ -1,0 +1,160 @@
+<html>
+<head>
+	<!----------Header----------->
+	<?php include('cco_header.php');?>
+</head>
+<body>
+	<!----------Top Navigation Bar-------->
+	<?php include('cco_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('cco_side_nav_bar.php');?>
+	
+	<!------------------Dashboard section------------------>
+    <section>
+        <div class = "main-content">
+        <div class="container">
+        <div class="row">
+            <h1 class="label">Dashboard</h1>
+            <?php
+                date_default_timezone_set("Asia/Singapore");
+                echo date("l") . date("Y/m/d") . date("H:i") . "<br>";
+            ?>
+            <ul style="list-style-type: none;">
+                <li style="float:left;text-align: center;padding: 5px;">
+                    <a href="#C1">View Statistics</a>
+                </li>
+                <li style="float:left;text-align: center;padding: 5px;">
+                    <a href="#C2">View Filed Incidents</a>
+                </li>
+
+            </ul>
+
+            <p>&nbsp;</p>
+            <hr>
+
+            <h3 class="label" id="C1">Incident Statistics</h3>
+            <p>&nbsp;</p>
+
+            <table class="table" style="height: 140px;padding: 2px;" border="5" width="900">
+            <caption>Total number of incidents</caption>
+            <tbody>
+                <tr style="height: 70px;" >
+                    <th scope="col" width="150">Fire</th>
+                    <th scope="col" width="150">Gas Leak</th>
+                    <th scope="col" width="150">Natrual Disaster</th>
+                    <th scope="col" width="150">Traffic Accident</th>
+                    <th scope="col" width="150">Terrorist Attack</th>
+                    <th scope="col" width="150">Others</th>
+                </tr>
+
+
+                <tr style="height: 70px;">
+                    <td title="Total number of fire">
+                    <?php
+                        $incidentController = new agency_incidentController();
+                        $emergencyType = "Fire";
+                        $allIncidentArray = $incidentController->getAllIncidentsByEmergencyType($emergencyType);
+                        for($count=0; $count< sizeof($allIncidentArray); $count++){}
+                        echo $count;
+                    ?></td>
+                    <td title="Total number of gas leak">
+                    <?php
+                        $incidentController = new agency_incidentController();
+                        $emergencyType = "Gas Leak";
+                        $allIncidentArray = $incidentController->getAllIncidentsByEmergencyType($emergencyType);
+                        for($count=0; $count< sizeof($allIncidentArray); $count++){}
+                        echo $count;
+                    ?></td>
+                    <td title="Total number of natural disaster">
+                    <?php
+                        $incidentController = new agency_incidentController();
+                        $emergencyType = "Natural Disaster";
+                        $allIncidentArray = $incidentController->getAllIncidentsByEmergencyType($emergencyType);
+                        for($count=0; $count< sizeof($allIncidentArray); $count++){}
+                        echo $count;
+                    ?></td>
+                    <td title="Total number of traffic accident">
+                    <?php
+                        $incidentController = new agency_incidentController();
+                        $emergencyType = "Traffic Accident";
+                        $allIncidentArray = $incidentController->getAllIncidentsByEmergencyType($emergencyType);
+                        for($count=0; $count< sizeof($allIncidentArray); $count++){}
+                        echo $count;
+                    ?></td>
+                    <td title="Total number of terrorist attack">
+                    <?php
+                        $incidentController = new agency_incidentController();
+                        $emergencyType = "Terrorist Attack";
+                        $allIncidentArray = $incidentController->getAllIncidentsByEmergencyType($emergencyType);
+                        for($count=0; $count< sizeof($allIncidentArray); $count++){}
+                        echo $count;
+                    ?></td>
+                    <td title="Total number of other incidents">
+                    <?php
+                        $incidentController = new agency_incidentController();
+                        $allIncidentArray = $incidentController->getOtherIncidents();
+                        for($count=0; $count< sizeof($allIncidentArray); $count++){}
+                        echo $count;
+                    ?></td>
+                </tr>
+            </tbody>
+            </table>
+
+            <p>&nbsp;</p>
+            <hr>
+
+            <h3 class="label" id="C2">Filed Incidents</h3>
+            <p>&nbsp;</p>
+
+            <table class="table" style="height: 140px;padding: 2px;" border="5" width="910">
+            <tbody>
+                <tr style="height: 70px;">
+                    <th scope="col" width="130">ID</th>
+                    <th scope="col" width="130">Name</th>
+                    <th scope="col" width="130">Mobile No.</th>
+                    <th scope="col" width="130">Location</th>
+                    <th scope="col" width="130">Emergency Type</th>
+                    <th scope="col" width="130">Assistance Type</th>
+                    <th scope="col" width="130">File Date Time</th>
+                </tr>
+
+            <?php
+                $username = "cco1";
+                $incidentController = new agency_incidentController();
+                $allIncidentArray = $incidentController->getAllOpenIncidents();
+                for($m=0; $m< sizeof($allIncidentArray); $m++){
+                    if($allIncidentArray[$m][8] == $username){
+            ?>
+                <tr style="height: 70px;" title="Information of incidents filed by user 'cco1' ">
+                    <th scope="row"><?php echo $allIncidentArray[$m][0]; ?></th>
+                    <td><?php echo $allIncidentArray[$m][1]; ?></td>
+                    <td><?php echo $allIncidentArray[$m][2]; ?></td>
+                    <td><?php echo $allIncidentArray[$m][3]; ?></td>
+                    <td><?php echo $allIncidentArray[$m][4]; ?></td>
+                    <td><?php echo $allIncidentArray[$m][5]; ?></td>
+                    <td><?php echo $allIncidentArray[$m][7]; ?></td>
+                </tr>
+            <?php
+                }
+                }
+            ?>
+            </tbody>
+            </table>
+
+            <p>&nbsp;</p>
+            <hr>
+
+
+        </div>
+        </div>
+        </div>
+    </section>
+	
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+</body>
+</html>

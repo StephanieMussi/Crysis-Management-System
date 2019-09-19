@@ -1,0 +1,175 @@
+CREATE TABLE users(
+	username	VARCHAR(15),
+	password	LONGTEXT NOT NULL,
+	type	VARCHAR(10),
+	
+	PRIMARY KEY (username)
+);
+
+CREATE TABLE cco(
+	username	VARCHAR(15),
+    
+    PRIMARY KEY (username),
+	FOREIGN KEY (username) REFERENCES users(username)
+);
+
+CREATE TABLE cmo(
+	username	VARCHAR(15),
+    
+    PRIMARY KEY (username)
+);
+
+CREATE TABLE pmo(
+	username	VARCHAR(15),
+    
+    PRIMARY KEY (username),
+	FOREIGN KEY (username) REFERENCES users(username)
+);
+
+CREATE TABLE agency(
+    username	VARCHAR(15),
+    name	VARCHAR(25)	NOT NULL,
+    
+    PRIMARY KEY (username),
+    FOREIGN KEY (username) REFERENCES users(username)
+);
+
+CREATE TABLE incident(
+    incidentId	INTEGER AUTO_INCREMENT,
+    name	VARCHAR(25) NOT NULL,
+    mobileNo	VARCHAR(15) NOT NULL,
+	location	VARCHAR(50)	NOT NULL,
+    emergencyType	VARCHAR(20) NOT NULL,
+    typeOfAssistance	VARCHAR(30),
+    remarks	VARCHAR(255),
+    fileDateTime	dateTime DEFAULT CURRENT_TIMESTAMP,
+    cco_username	VARCHAR(15),
+	status VARCHAR(15) DEFAULT 'open',
+	statusDateTime	dateTime,
+    
+    PRIMARY KEY (incidentId)
+);
+
+CREATE TABLE location(
+	incidentId INTEGER,
+    latitude	DOUBLE	NOT NULL,
+    longitude	DOUBLE NOT NULL,
+    
+    PRIMARY KEY (incidentId),
+	FOREIGN KEY (incidentId) REFERENCES incident(incidentId)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
+);
+
+
+CREATE TABLE severeCase(
+  	incidentId	INTEGER,
+    suggestionOnAction	VARCHAR(255)	NOT NULL,
+    proposedSuggestion	VARCHAR(255),
+    severityLevel	INTEGER	NOT NULL,
+    pmo_username	VARCHAR(15),
+	cmo_username	VARCHAR(15)	NOT NULL,
+    
+    PRIMARY KEY (incidentId),
+    FOREIGN KEY (pmo_username) REFERENCES pmo(username),
+	FOREIGN KEY (cmo_username) REFERENCES cmo(username),
+);
+
+CREATE TABLE dispatch(
+  	cmo_username VARCHAR(15),
+    incidentId	INTEGER,
+    dispatchMsg	VARCHAR(255),
+    dispatchDateTime	DATETIME	DEFAULT CURRENT_TIMESTAMP,
+  	
+    PRIMARY KEY (cmo_username, incidentId, dispatchMsg, dispatchDateTime),
+    FOREIGN KEY (cmo_username) REFERENCES cmo(username),
+    FOREIGN KEY (incidentId) REFERENCES incident(incidentId)
+);
+
+CREATE TABLE updates(
+	incidentId	INTEGER,
+    msg	VARCHAR(255),
+    updateDateTime	DATETIME	DEFAULT CURRENT_TIMESTAMP,
+    agency_username	VARCHAR(15),
+    
+    PRIMARY KEY (incidentId, msg, updateDateTime, agency_username),
+    FOREIGN KEY (agency_username) REFERENCES agency(username),
+    FOREIGN KEY (incidentId) REFERENCES incident(incidentId)
+);
+
+CREATE TABLE publish(
+  	incidentId	INTEGER,
+    cmo_username	VARCHAR(15),
+    msg	VARCHAR(255)	NOT NULL,
+    publishDateTime	DATETIME	DEFAULT CURRENT_TIMESTAMP,
+    type	VARCHAR(20)	NOT NULL,
+    
+    PRIMARY KEY (incidentId, cmo_username, msg, publishDateTime, type),
+    FOREIGN KEY (incidentId) REFERENCES incident(incidentId),
+    FOREIGN KEY (cmo_username) REFERENCES cmo(username)
+);
+
+CREATE TABLE report(
+   	rptId	INTEGER	AUTO_INCREMENT,
+   	fileName	VARCHAR(255) NOT NULL,
+    pdf	BLOB,
+    reportDateTime	DATETIME	DEFAULT CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (rptId)
+);
+
+CREATE TABLE reportIncident(
+    rptId	INTEGER NOT NULL,
+  	incidentId	INTEGER NOT NULL,
+    
+    PRIMARY KEY (rptId, incidentId)
+);
+
+CREATE TABLE notification(
+	notificationId	INTEGER AUTO_INCREMENT,
+    type	VARCHAR(30)	NOT NULL,
+    notificationDateTime	DATETIME	DEFAULT CURRENT_TIMESTAMP,
+    msg	VARCHAR(255)	NOT NULL,
+    target	VARCHAR(10)	NOT NULL,
+    
+    PRIMARY KEY(notificationId)
+);
+
+CREATE TABLE incidentNotification(
+	notificationId	INTEGER,
+    incidentId	INTEGER	NOT NULL,
+    
+    PRIMARY KEY(notificationId),
+    FOREIGN KEY(notificationId) REFERENCES notification(notificationId)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+    FOREIGN KEY(incidentId) REFERENCES incident(incidentId)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE severeCaseNotification(
+	notificationId	INTEGER,
+    incidentId	INTEGER	NOT NULL,
+    
+    PRIMARY KEY(notificationId),
+    FOREIGN KEY(notificationId) REFERENCES notification(notificationId)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+    FOREIGN KEY(incidentId) REFERENCES incident(incidentId)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE reportNotification( 
+	notificationId INTEGER, 
+	rptId INTEGER NOT NULL, 
+	
+	PRIMARY KEY(notificationId), 
+	FOREIGN KEY(notificationId) REFERENCES notification(notificationId) 
+	ON DELETE CASCADE 
+	ON UPDATE CASCADE, 
+	FOREIGN KEY(rptId) REFERENCES report(rptId) 
+	ON DELETE CASCADE ON UPDATE CASCADE 
+);
+

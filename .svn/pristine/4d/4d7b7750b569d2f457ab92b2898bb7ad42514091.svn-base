@@ -1,0 +1,94 @@
+<?php
+include('pmo_location.php');
+	class pmo_locationController { 
+		//other methods
+        public function getSpecificIncidentLatLng($incidentId){
+            include('../script/pmo_dbh.php');
+            //query to get all incidents
+            $sql = "SELECT * FROM location WHERE incidentId=?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            if(!mysqli_stmt_prepare($stmt,$sql)){
+                return "sqlError";
+            }
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $incidentId);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            $row = mysqli_fetch_assoc($result);
+
+            if($row != NULL){ //there is such incidentId
+                
+                $location = new pmo_location();
+
+                $location->setIncidentId($row["incidentId"]);
+                $location->setLatitude($row["latitude"]);
+                $location->setLongitude($row["longitude"]);
+                return $location; //return location obj
+            }
+            else{
+                return "viewError";
+            }
+        }
+
+
+   	 	public function getAllIncidentsLatLng(){ 
+        	//query to get all incidents
+			include('../script/pmo_dbh.php');
+
+            $sql = "SELECT * FROM location;";
+		
+			//run query
+			$result = mysqli_query($conn, $sql);
+	
+			//stores number of rows in results
+			$resultCheck = mysqli_num_rows($result);
+	
+			$locationArray = array();
+
+			$m = 0;
+
+			if($resultCheck > 0){
+				while($rows = mysqli_fetch_row($result)){
+				/* From location db table
+				0: incidentId, 1: latitude, 2: longitude*/
+					$locationArray[$m] = array();
+					for($i=0; $i< 3; $i++){
+						$locationArray[$m][$i] = $rows[$i];
+					}
+					$m++;
+				}
+			}
+			
+			return $locationArray; //returns array
+    	}
+
+    	public function insertDetails($location){ //pass location obj
+    		include('../script/pmo_dbh.php');
+    		//query to insert record into location db
+    		$sql = "INSERT INTO location(incidentId,latitude,longitude) VALUES(?,?,?)";
+			
+			$stmt = mysqli_stmt_init($conn);
+			if(!mysqli_stmt_prepare($stmt,$sql)){
+				return "sqlError";
+			}
+	
+			mysqli_stmt_bind_param($stmt, "sss", $location->getIncidentId(), $location->getLatitude(), $location->getLongitude());
+			
+			$result = mysqli_stmt_execute($stmt);
+			if($result == true){ //insert success
+				return "success";
+			}
+			else{
+				return "insertError";
+			}
+    	} 
+	} 
+?>

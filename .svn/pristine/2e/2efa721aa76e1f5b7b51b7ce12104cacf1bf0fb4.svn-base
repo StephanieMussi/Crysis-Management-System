@@ -1,0 +1,42 @@
+<?php
+	class notification{
+		//attributes
+		protected $notificationId;
+		protected $type;
+		protected $notificationDateTime;
+		protected $msg;
+		protected $target;
+
+		//getter and setter methods
+		public function getNotificationId(){
+			return $this->notificationId;
+		}
+		public function setNotificationId($notificationId){
+			$this->notificationId = $notificationId;
+		}
+		public function getType(){
+			return $this->type;
+		}
+		public function setType($type){
+			$this->type = $type;
+		}
+		public function getNotificationDateTime(){
+			return $this->notificationDateTime;
+		}
+		public function setNotificationDateTime($notificationDateTime){
+			$this->notificationDateTime = $notificationDateTime;
+		}
+		public function getMsg(){
+			return $this->msg;
+		}
+		public function setMsg($msg){
+			$this->msg = $msg;
+		}
+		public function getTarget(){
+			return $this->target;
+		}
+		public function setTarget($target){
+			$this->target = $target;
+		}
+	}
+?>

@@ -1,0 +1,117 @@
+<?php
+	if(isset($_POST['btn_confirm'])){
+		include('../classes/incidentController.php');
+		include('../classes/locationController.php');
+		include('../classes/notificationController.php');
+		include('../classes/incidentNotificationController.php');
+		
+		$incident = new incident();
+
+		$incident->setName($_POST['name']);
+		$incident->setMobileNo($_POST['mobileNo']);
+		$incident->setLocation($_POST['location']);
+		$incident->setEmergencyType($_POST['emergencyType']);
+		$incident->setTypeOfAssistance($_POST['assistanceType']);
+		$incident->setRemarks($_POST['remarks']);
+		$lat = $_POST['lat'];
+		$lng = $_POST['lng'];
+		
+		session_start();
+		$username = $_SESSION['username'];
+		
+		if($incident->getTypeOfAssistance() == 'nil'){
+			$incident->setTypeOfAssistance('');
+		}
+		
+		$incident->setCcoUsername($username);
+
+		$incidentController = new incidentController();
+
+		$result = $incidentController->insertDetails($incident);
+
+
+		if($result == 'sqlError'){
+			//convert back to the right format be passed back as querystrings
+			if(!($incident->getEmergencyType() == 'Fire' || $incident->getEmergencyType() == 'Terrorist Attack' || $incident->getEmergencyType() == 'Kidnap')){
+				$others = $incident->getEmergencyType();
+				$incident->setTypeOfAssistance('Others');
+			}
+			if($incident->getTypeOfAssistance() == NULL){
+				$incident->setTypeOfAssistance('nil'); 
+			}
+
+			if($username == NULL){
+				header("Location: ../public/public_confirm_incident.php?error=sqlError&name=".$incident->getName()."&mobileNo=".$incident->getMobileNo()."&location=".$incident->getLocation()."&lat=".$lat."&lng=".$lng."&emergencyType=".$incident->getEmergencyType()."&others=".$others."&assistanceType=".$incident->getTypeOfAssistance()."&remarks=".$incident->getRemarks());
+				exit();
+			}
+			else{
+				header("Location: ../cco/cco_confirm_incident.php?error=sqlError&name=".$incident->getName()."&mobileNo=".$incident->getMobileNo()."&location=".$incident->getLocation()."&lat=".$lat."&lng=".$lng."&emergencyType=".$incident->getEmergencyType()."&others=".$others."&assistanceType=".$incident->getTypeOfAssistance()."&remarks=".$incident->getRemarks());
+				exit();
+			}
+		}
+
+		else if($result == 'insertError'){
+			//convert back to the right format be passed back as querystrings
+			if(!($incident->getEmergencyType() == 'Fire' || $incident->getEmergencyType() == 'Terrorist Attack' || $incident->getEmergencyType() == 'Kidnap')){
+				$others = $incident->getEmergencyType();
+				$incident->setTypeOfAssistance('Others');
+			}
+			if($incident->getTypeOfAssistance() == NULL){
+				$incident->setTypeOfAssistance('nil'); 
+			}
+
+			if($username == NULL){
+				header("Location: ../public/public_confirm_incident.php?error=insertError&name=".$incident->getName()."&mobileNo=".$incident->getMobileNo()."&location=".$incident->getLocation()."&lat=".$lat."&lng=".$lng."&emergencyType=".$incident->getEmergencyType()."&others=".$others."&assistanceType=".$incident->getTypeOfAssistance()."&remarks=".$incident->getRemarks());
+				exit();
+			}
+			else{
+				header("Location: ../cco/cco_confirm_incident.php?error=insertError&name=".$incident->getName()."&mobileNo=".$incident->getMobileNo()."&location=".$incident->getLocation()."&lat=".$lat."&lng=".$lng."&emergencyType=".$incident->getEmergencyType()."&others=".$others."&assistanceType=".$incident->getTypeOfAssistance()."&remarks=".$incident->getRemarks());
+				exit();
+			}
+		}
+		
+		else { //insert success returns incident id of the incident that just got created.
+			//location obj to be created only upon successfully insertion of incident into incident db
+			$location = new location();
+			$location->setIncidentId($result);
+			$location->setLatitude($lat);
+			$location->setLongitude($lng);
+
+
+			$locationController = new locationController();
+			$locationController ->insertDetails($location);
+
+			//notification obj to be created only upon successfully insertion of incident into incident db
+			$notification = new notification();
+			$notification->setType('incidentNotification');
+			$notification->setMsg('New incident has been filed');
+			$notification->setTarget('cmo');
+
+			$notificationController = new notificationController();
+			$result1 = $notificationController->insertDetails($notification);
+			
+			//creation of incidentNotification obj
+			$incidentNotification = new incidentNotification();
+			$incidentNotification->setIncidentId($result);
+			$incidentNotification->setNotificationId($result1);
+
+			$incidentNotificationController = new incidentNotificationController();
+			$incidentNotificationController->insertDetails($incidentNotification);
+
+			if($username == NULL){
+				header("Location: ../public/public_confirm_incident.php?result=success&name=".$incident->getName()."&mobileNo=".$incident->getMobileNo()."&location=".$incident->getLocation()."&emergencyType=".$incident->getEmergencyType()."&others=".$others."&assistanceType=".$incident->getTypeOfAssistance()."&remarks=".$incident->getRemarks());
+			}
+			else{
+				header("Location: ../cco/cco_confirm_incident.php?result=success&name=".$incident->getName()."&mobileNo=".$incident->getMobileNo()."&location=".$incident->getLocation()."&emergencyType=".$incident->getEmergencyType()."&others=".$others."&assistanceType=".$incident->getTypeOfAssistance()."&remarks=".$incident->getRemarks());
+			}
+		}
+	}
+	else{
+		if($username == NULL){
+			header("Location: ../public/public_file_accident.php");
+		}
+		else{
+			header("Location: ../cco/cco_file_accident.php");
+		}
+	}
+?>

@@ -1,0 +1,87 @@
+<?php
+	include('severeCaseNotification.php');
+	class severeCaseNotificationController{
+		//other methods
+		public function getAllSevereCaseNotification(){
+			//query to get all severe case notification
+			include('../script/dbh.php');
+
+            $sql = "SELECT * FROM severeCaseNotification;";
+		
+			//run query
+			$result = mysqli_query($conn, $sql);
+	
+			//stores number of rows in results
+			$resultCheck = mysqli_num_rows($result);
+	
+			$severeCaseNotificationArray = array();
+
+			$m = 0;
+
+			if($resultCheck > 0){
+				while($rows = mysqli_fetch_row($result)){
+				/* From severe case notification db table
+				0: notificationId, 1: incidentId */
+					$severeCaseNotificationArray[$m] = array();
+					for($i=0; $i< 2; $i++){
+						$severeCaseNotificationArray[$m][$i] = $rows[$i];
+					}
+					$m++;
+				}
+			}
+			
+			return $severeCaseNotificationArray; //returns array
+		}
+
+		public function insertDetails($severeCaseNotification){ //pass severeCaseNotification obj
+    		include('../script/dbh.php');
+    		//query to insert record into severeCaseNotification db
+    		$sql = "INSERT INTO severeCaseNotification(notificationId, incidentId) VALUES(?,?)";
+			
+			$stmt = mysqli_stmt_init($conn);
+			if(!mysqli_stmt_prepare($stmt,$sql)){
+				return "sqlError";
+			}
+	
+			mysqli_stmt_bind_param($stmt, "ss", $severeCaseNotification->getNotificationId(), $severeCaseNotification->getIncidentId());
+			
+			$result = mysqli_stmt_execute($stmt);
+			if($result == true){ //insert success
+				return "success";
+			}
+			else{
+				return "insertError";
+			}
+    	} 
+
+    	public function getSpecificSevereCaseNotification($notificationId){
+    		include('../script/dbh.php');
+            //query to get all incidents
+            $sql = "SELECT * FROM severeCaseNotification WHERE notificationId=?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $notificationId);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            $row = mysqli_fetch_assoc($result);
+
+            if($row != NULL){ //there is such severe case notification with that notification id
+                $severeCaseNotification = new severeCaseNotification();
+
+                $severeCaseNotification->setNotificationId($row["notificationId"]);
+                $severeCaseNotification->setIncidentId($row["incidentId"]);
+                return $severeCaseNotification; //returns severeCaseNotification obj
+            }
+            else{
+            	return false;
+            }
+        }
+	}
+?>

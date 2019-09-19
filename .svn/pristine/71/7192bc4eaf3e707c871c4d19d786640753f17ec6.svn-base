@@ -1,0 +1,136 @@
+<?php
+	include('../classes/cmo/cmo_incidentController.php'); //to get relevant incident details for the msg
+	include('../classes/cmo/cmo_dispatchController.php'); //to create db record
+	include('../classes/cmo/cmo_locationController.php');
+	include('../classes/agency/agency_incidentController.php');
+	include('../classes/agency/agency_dispatchDetailsController.php');
+	include('../classes/agency/agency_locationController.php');
+
+	//dispatch means this incident will appear in agency's incident table and location table and dispatchDetails table
+
+	if(isset($_POST['btn_submit'])){ //if this page is a result of clicking the submit button
+		
+		$incidentId = $_POST['incidentId'];
+		$cmo_incidentController = new cmo_incidentController();
+		$incidentObj = $cmo_incidentController->getSpecificIncident($incidentId);
+
+		$name = $incidentObj->getName();
+		$mobileNo = $incidentObj->getMobileNo();
+		$location = $incidentObj->getLocation();
+		
+		$emergencyType = $_POST['emergencyType'];
+		$assistanceType = $_POST['assistanceType'];
+		$remarks = $_POST['remarks'];
+		
+		$fileDateTime = $incidentObj->getFileDateTime();
+		$filedBy = $incidentObj->getCcoUsername();
+
+		session_start();
+		$cmo_username = $_SESSION['username'];
+		
+		$scdf = $_POST['scdf'];
+		$spf = $_POST['spf'];
+		$sof = $_POST['sof'];
+		$_995 = $_POST['995'];
+		$sp = $_POST['sp'];
+
+		$dispatchUnit = "";
+		$i = 0;
+		if($scdf == 'checked'){
+			$dispatchUnit .= "SCDF";
+			$i++;
+		}
+		if($spf == 'checked'){
+			if($i > 0){
+				$dispatchUnit .= ", SPF";
+			}
+			else{
+				$dispatchUnit .= "SPF";
+			}
+			$i++;
+		}
+		if($sof == 'checked'){
+			if($i > 0){
+				$dispatchUnit .= ", SOF";
+			}
+			else{
+				$dispatchUnit .= "SOF";
+			}
+			$i++;
+		}
+		if($_995 == 'checked'){
+			if($i > 0){
+				$dispatchUnit .= ", 995";
+			}
+			else{
+				$dispatchUnit .= "995";
+			}
+			$i++;
+		}
+		if($sp == 'checked'){
+			if($i > 0){
+				$dispatchUnit .= ", Singapore Power";
+			}
+			else{
+				$dispatchUnit .= "Singapore Power";
+			}
+			$i++;
+		}
+
+
+		/* Wei Hao's code
+
+		$botToken = "886234058:AAGpO0Xd6oy81EMGZFjsWjB-F-3HzOegtk4";
+		$website = "https://api.telegram.org/bot".$botToken;
+	
+		$update = file_get_contents($website."/getupdates");
+	
+		$updateArray = json_decode($update, TRUE);
+	
+		$chatId = $updateArray["result"][0]["message"]["chat"]["id"];
+	
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=!!!Emergency!!!");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Incident ID:001, Incident Type: Fire");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Incident Date and Time: 28/02/2019, 1400hrs");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Location: North Spine at NTU, S(666666)");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Dispatch Units: SCDF and SPF");
+		file_get_contents($website."/sendmessage?chat_id=".$chatId."&text=Remarks: Witness - Tan Ah Kau (9999999) Witnesses spotted fire burning down NTU.");
+		*/
+
+
+		//initialize dispatchMsg to store in db
+		$dispatchMsg = "incidentId=".$incidentId."&mobileNo=".$mobileNo."&location=".$location."&emergencyType=".$emergencyType."&assistanceType=".$assistanceType."&remarks=".$remarks."&fileDateTime=".$fileDateTime."&filedBy=".$filedBy."dispatchUnit=".$dispatchUnit;
+
+		//insert into db
+		$cmo_dispatch = new cmo_dispatch();
+		$cmo_dispatch->setCmoUsername($cmo_username);
+		$cmo_dispatch->setIncidentId($incidentId);
+		$cmo_dispatch->setDispatchMsg($dispatchMsg);
+
+		$cmo_dispatchController = new cmo_dispatchController();
+		$result = $cmo_dispatchController->insertDetails($cmo_dispatch); //pass dispatch obj
+		if($result == 'success'){
+			//once insert at cmo dispatch table successfully, do the insertion at pmo table
+			//1st, insert into agency incident table
+			$agency_incidentController = new agency_incidentController();
+			$agency_incidentController->insertDetails($incidentObj);
+
+			//2nd, insert into pmo location table
+			$cmo_locationController = new cmo_locationController();
+			$locationObj = $cmo_locationController->getSpecificIncidentLatLng($incidentId);
+			$agency_locationController = new agency_locationController();
+			$agency_locationController->insertDetails($locationObj);
+			
+			//3rd, insert into pmo dispatchDetails table
+			$agency_dispatchDetailsController = new agency_dispatchDetailsController();
+			$lol = $agency_dispatchDetailsController->insertDetails($cmo_dispatch);
+			
+			header("Location:../cmo/cmo_send_sms_view_all.php?result=success");	
+			exit();
+		}
+	}
+	else{
+		header("Location: cmo_send_sms_view_all.php");
+		exit();
+	}
+?>

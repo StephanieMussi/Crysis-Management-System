@@ -1,0 +1,24 @@
+<?php
+	class pmo_users { 
+		//attributes
+    	protected $username;
+    	protected $password; 
+    
+    	//getter and setter methods
+    	public function getUsername(){
+    		return $this->username;
+    	}
+
+   	 	public function setUsername($username){ 
+        	 $this->username = $username;
+    	}
+
+    	public function getPassword(){
+    		return $this->password;
+    	}
+
+   	 	public function setPassword($password){ 
+        	 $this->password = $password;
+    	}
+	} 
+?>

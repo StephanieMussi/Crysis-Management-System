@@ -1,0 +1,232 @@
+<?php
+    include('agency_incident.php');
+    class agency_incidentController { 
+
+        //other methods
+        public function getSpecificIncident($incidentId){
+            include('../script/agency_dbh.php');
+            //query to get all incidents
+            $sql = "SELECT * FROM incident WHERE incidentId=?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            if(!mysqli_stmt_prepare($stmt,$sql)){
+                return "sqlError";
+            }
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $incidentId);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            $row = mysqli_fetch_assoc($result);
+
+            if($row != NULL){ //there is such incidentId
+                $incident = new agency_incident();
+                
+                $incident->setIncidentId($row["incidentId"]);
+                $incident->setName($row["name"]);
+                $incident->setMobileNo($row["mobileNo"]);
+                $incident->setLocation($row["location"]);
+                $incident->setEmergencyType($row["emergencyType"]);
+                $incident->setTypeOfAssistance($row["typeOfAssistance"]);
+                $incident->setRemarks($row["remarks"]);
+                $incident->setFileDateTime($row["fileDateTime"]);
+                $incident->setCcoUsername($row["cco_username"]);
+                $incident->setStatus($row["status"]);
+                $incident->setStatusDateTime($row["statusDateTime"]);
+                return $incident; //return incident obj
+            }
+            else{
+                return "viewSentRequestError";
+            }
+        }
+
+        public function getAllIncidentsByEmergencyType($emergencyType){ 
+            include('../script/agency_dbh.php');
+
+            $sql = "SELECT * FROM incident WHERE status = 'open' AND emergencyType = ?;";
+        
+            $stmt = mysqli_stmt_init($conn);
+
+            mysqli_stmt_prepare($stmt,$sql);
+
+            mysqli_stmt_bind_param($stmt, "s", $emergencyType);
+
+            //run query
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            //stores number of rows in results
+            $resultCheck = mysqli_num_rows($result);
+    
+            $openIncidentArrayByEmergencyType = array();
+
+            $m = 0;
+
+            if($resultCheck > 0){
+                while($rows = mysqli_fetch_row($result)){
+                /* From incident db table
+                0: incidentId, 1: name, 2: mobileNo, 3: location, 4: emergencyType, 5: typeOfAssistance, 6: remarks, 7: fileDateTime, 8: cco_username, 9: status, 10: statusDateTime*/
+                    $openIncidentArrayByEmergencyType[$m] = array();
+                    for($i=0; $i< 11; $i++){
+                        $openIncidentArrayByEmergencyType[$m][$i] = $rows[$i];
+                    }
+                    $m++;
+                }
+            }
+
+            return $openIncidentArrayByEmergencyType; //returns array
+        }
+
+        public function getOtherIncidents(){ 
+            //query to get all other open incidents
+            include('../script/agency_dbh.php');
+
+            $sql = "SELECT * FROM incident WHERE status = 'open' AND emergencyType NOT IN ('Terrorist Attack' OR 'Natural Disaster' OR'Fire' OR 'Traffic Accident');";
+        
+            //run query
+            $result = mysqli_query($conn, $sql);
+    
+            //stores number of rows in results
+            $resultCheck = mysqli_num_rows($result);
+    
+            $openOtherIncidentsArray = array();
+
+            $m = 0;
+
+            if($resultCheck > 0){
+                while($rows = mysqli_fetch_row($result)){
+                /* From incident db table
+                0: incidentId, 1: name, 2: mobileNo, 3: location, 4: emergencyType, 5: typeOfAssistance, 6: remarks, 7: fileDateTime, 8: cco_username, 9: status, 10: statusDateTime*/
+                    $openOtherIncidentsArray[$m] = array();
+                    for($i=0; $i< 11; $i++){
+                        $openOtherIncidentsArray[$m][$i] = $rows[$i];
+                    }
+                    $m++;
+                }
+            }
+            
+            return $openOtherIncidentsArray; //returns array
+        }
+        
+        public function getAllClosedIncidents(){ 
+            //query to get all open incidents
+            include('../script/agency_dbh.php');
+
+            $sql = "SELECT * FROM incident WHERE status = 'closed';";
+        
+            //run query
+            $result = mysqli_query($conn, $sql);
+    
+            //stores number of rows in results
+            $resultCheck = mysqli_num_rows($result);
+    
+            $closedIncidentArray = array();
+
+            $m = 0;
+
+            if($resultCheck > 0){
+                while($rows = mysqli_fetch_row($result)){
+                /* From incident db table
+                0: incidentId, 1: name, 2: mobileNo, 3: location, 4: emergencyType, 5: typeOfAssistance, 6: remarks, 7: fileDateTime, 8: cco_username, 9: status, 10: statusDateTime*/
+                    $closedIncidentArray[$m] = array();
+                    for($i=0; $i< 11; $i++){
+                        $closedIncidentArray[$m][$i] = $rows[$i];
+                    }
+                    $m++;
+                }
+            }
+            
+            return $closedIncidentArray; //returns array
+        }
+
+        public function getAllOpenIncidents(){ 
+            //query to get all open incidents
+            include('../script/agency_dbh.php');
+
+            $sql = "SELECT * FROM incident WHERE status = 'open';";
+        
+            //run query
+            $result = mysqli_query($conn, $sql);
+    
+            //stores number of rows in results
+            $resultCheck = mysqli_num_rows($result);
+    
+            $openIncidentArray = array();
+
+            $m = 0;
+
+            if($resultCheck > 0){
+                while($rows = mysqli_fetch_row($result)){
+                /* From incident db table
+                0: incidentId, 1: name, 2: mobileNo, 3: location, 4: emergencyType, 5: typeOfAssistance, 6: remarks, 7: fileDateTime, 8: cco_username, 9: status, 10: statusDateTime*/
+                    $openIncidentArray[$m] = array();
+                    for($i=0; $i< 11; $i++){
+                        $openIncidentArray[$m][$i] = $rows[$i];
+                    }
+                    $m++;
+                }
+            }
+            
+            return $openIncidentArray; //returns array
+        }
+
+        public function getAllIncidents(){ 
+            //query to get all incidents
+            include('../script/agency_dbh.php');
+
+            $sql = "SELECT * FROM incident;";
+        
+            //run query
+            $result = mysqli_query($conn, $sql);
+    
+            //stores number of rows in results
+            $resultCheck = mysqli_num_rows($result);
+    
+            $incidentArray = array();
+
+            $m = 0;
+
+            if($resultCheck > 0){
+                while($rows = mysqli_fetch_row($result)){
+                /* From incident db table
+                0: incidentId, 1: name, 2: mobileNo, 3: location, 4: emergencyType, 5: typeOfAssistance, 6: remarks, 7: fileDateTime, 8: cco_username, 9: status, 10: statusDateTime*/
+                    $incidentArray[$m] = array();
+                    for($i=0; $i< 11; $i++){
+                        $incidentArray[$m][$i] = $rows[$i];
+                    }
+                    $m++;
+                }
+            }
+            
+            return $incidentArray; //returns array
+        }
+
+        public function insertDetails($incident){ //pass incident obj
+            include('../script/agency_dbh.php');
+            //query to insert record into incident db
+            $sql = "INSERT INTO incident(incidentId,name,mobileNo,location,emergencyType,typeOfAssistance,remarks,cco_username) VALUES(?,?,?,?,?,?,?,?)";
+            
+            $stmt = mysqli_stmt_init($conn);
+            if(!mysqli_stmt_prepare($stmt,$sql)){
+                return "sqlError";
+            }
+    
+            mysqli_stmt_bind_param($stmt, "ssssssss", $incident->getIncidentId(), $incident->getName(), $incident->getMobileNo(), $incident->getLocation(), $incident->getEmergencyType(), $incident->getTypeOfAssistance(), $incident->getRemarks(), $incident->getCcoUsername());
+            
+            $result = mysqli_stmt_execute($stmt);
+            if($result == true){ //insert success
+                return mysqli_insert_id($conn);
+            }
+            else{
+                return "insertError";
+            }
+        } 
+    } 
+?>

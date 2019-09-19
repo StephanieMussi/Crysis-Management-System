@@ -1,0 +1,230 @@
+<html>
+<head>
+	<?php include('../classes/incident.php'); ?>
+	<?php include('../classes/severeCase.php'); ?>
+
+	<!----------Header----------->
+	<?php include('pmo_header.php');?>
+</head>
+<body onload="fillFunction()">
+	<!----------Top Navigation Bar-------->
+	<?php include('pmo_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('pmo_side_nav_bar.php');?>
+
+	<?php
+		if($_GET['Reject'] != "true"){
+			header("Location: pmo_view_more_info.php");
+			exit();
+		}
+	?>
+
+	<!----------------Approve incident list-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="col-md-12">
+	<div class="row">
+		<h3 class="label">Reject reason and new suggestion</h3>
+	</div>
+	</div>
+	</div>
+	</div>
+	<!------------Incident Info--------------->
+
+	<?php
+
+		$incident = new incident();
+		$incidentId = $_GET['incidentId'];
+		$result = $incident->getSpecificIncident($incidentId);
+
+		$severeCase = new severeCase();
+		$severeCase->getSpecificSevereCase($incidentId);
+
+		if($result == 'viewSentRequestError'){
+			echo '<p class="viewSentRequestError" style="color:red">Database execution error. Please try again later</p>';
+		}
+		else if($result == 'sqlError'){
+			echo '<p class="sqlError" style="color:red">Database connection error. Please try again later</p>';
+		}
+	?>
+
+	<div class = "main-content">
+	<div class="col-md-8">	
+		<table class="table table-borderless" >
+			<tr>
+				<td>
+					<label for="incidentId" class="boldlbl">Incident ID:</label>
+				</td>
+				<td>
+					<?php echo($incidentId); ?>
+					<input type="hidden" id="incidentId" name="incidentId"></input><!---input type so that can be passed to server. label cannot be read by server--->
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="name" class="boldlbl">Name:</label>
+				</td>
+				<td>
+					<?php echo($incident->getName()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="mobileNo" class="boldlbl">Mobile No.:</label>
+				</td>
+				<td>
+					<?php echo($incident->getMobileNo()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="location" class="boldlbl">Location:</label>
+				</td>
+				<td>
+					<?php echo($incident->getLocation()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="emergencyType" class="boldlbl">Type of Emergency:</label>
+				</td>
+				<td>
+					<?php echo($incident->getEmergencyType()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="assistanceType" class="boldlbl">Type of Assistance:</label>
+				</td>
+				<td>
+					<?php echo($incident->getTypeOfAssistance()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="remarks" class="boldlbl">Remarks:</label>
+				</td>
+				<td>
+					<?php echo($incident->getRemarks()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="dateTime" class="boldlbl">File Date Time:</label>
+				</td>
+				<td>
+					<?php echo($incident->getFileDateTime()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="filedBy" class="boldlbl">Filed By:</label>
+				</td>
+				<td>
+					<?php 
+						if($incident->getCcoUsername() == ""){
+							echo "Public";
+						}
+						else{
+							echo ($incident->getCcoUsername());
+						}
+					?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="severityLevel" class="boldlbl">Severity Level:</label>
+				</td>
+				<td>
+					<?php echo($severeCase->getSeverityLevel()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="suggestion" class="boldlbl">Suggestion on Action:</label>
+				</td>
+				<td>
+					<?php echo($severeCase->getSuggestionOnAction()); ?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="requestSentBy" class="boldlbl">Request Sent By:</label>
+				</td>
+				<td>
+					<?php echo($severeCase->getCmoUsername()); ?>
+				</td>
+			</tr>
+			<!---------------------------------------suggestion area----------------------------------------->
+			<form name="form" action="confirmReject.php" method="GET" >
+			<tr>
+				<td>
+					<label class="boldLbl">Proposed Suggestion</label>
+				</td>
+			</tr>
+			<tr>
+				<td colspan=2>
+					<textarea type="text" class="form-control" id="ProposedSuggestion" placeholder="" name="ProposedSuggestion"></textarea>
+				</td>
+			
+
+			</tr>
+			<tr>
+				<td colspan=2>
+					<div id="proposal_error" class="errorMsg"></div>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<button type="submit" name="btn_submit" class="btn btn-primary" onclick="return validateProposal()">Submit</button>
+					<button type="button" class="btn btn-light" >Back</button>
+				</td>
+			</tr>
+			</form>
+		</table>
+	</div>
+	</div>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+	
+</body>
+</html>
+
+<!---------------Client-side Validation----------------->
+<script>
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+//fill in label with values based on querystring passed
+function fillFunction(){
+	//incidentId
+	var incidentId = document.getElementById('incidentId');
+	incidentId.value = getParameterByName('incidentId');
+}
+
+
+function validateProposal(){
+	alert('Inside the validation');
+	var proposal = document.getElementById('ProposedSuggestion');
+	var proposal_error = document.getElementById('proposal_error');
+	if(proposal.value == ""){
+		proposal_error.textContent = "Please enter a suggestion";
+		Proposedsuggestion.focus();
+		Proposedsuggestion.select();
+		return false;
+	}
+	return true;
+}
+</script>

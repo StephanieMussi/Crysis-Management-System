@@ -1,0 +1,47 @@
+<?php
+	if(isset($_POST['btn_submit'])){
+		session_start();
+		$name = $_POST['name'];
+		$mobileNo = $_POST['mobileNo'];
+		$location = $_POST['location'];
+		$unitNo = $_POST['unitNo'];
+		if($unitNo == NULL){
+			$unitNo = "nil";
+		}
+
+		$latitude = $_POST['lat'];
+		$longitude = $_POST['lng'];
+		
+		$emergencyType = $_POST['emergencyType'];
+		if($emergencyType == 'Others'){
+			$others = $_POST['others_option']; 
+		}
+		else{
+			$others = "nil";
+		}
+
+		$assistanceType = $_POST['assistanceType'];
+
+		$remarks = $_POST['remarks'];
+		if($remarks == NULL){
+			$remarks = "nil"; 
+		}
+        echo $_SESSION['username'];
+
+		if($_SESSION['username'] == NULL)
+		{
+			header("Location: ../public/public_confirm_incident.php?submit=true&name=".$name."&mobileNo=".$mobileNo."&location=".$location."&unitNo=".$unitNo."&lat=".$latitude."&lng=".$longitude."&emergencyType=".$emergencyType."&others=".$others."&assistanceType=".$assistanceType."&remarks=".$remarks);
+		}
+		else if($_SESSION['type'] == "cco"){
+			header("Location: ../cco/cco_confirm_incident.php?submit=true&name=".$name."&mobileNo=".$mobileNo."&location=".$location."&unitNo=".$unitNo."&lat=".$latitude."&lng=".$longitude."&emergencyType=".$emergencyType."&others=".$others."&assistanceType=".$assistanceType."&remarks=".$remarks);
+		}
+	}
+	else{
+		if($_SESSION['username'] == NULL){
+			header("Location: ../public/public_file_accident.php");
+		}
+		else if($_SESSION['type'] == "cco"){
+			header("Location: ../cco/cco_file_accident.php");
+		}
+	}
+?>

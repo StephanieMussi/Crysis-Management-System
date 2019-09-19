@@ -1,0 +1,21 @@
+<?php
+	class reportNotification{
+		//attributes
+		protected $notificationId;
+		protected $rptId;
+
+		//getter and setter methods
+		public function getNotificationId(){
+			return $this->notificationId;
+		}
+		public function setNotificationId($notificationId){
+			$this->notificationId = $notificationId;
+		}
+		public function getRptId(){
+			return $this->rptId;
+		}
+		public function setRptId($rptId){
+			$this->rptId = $rptId;
+		}
+	}
+?>

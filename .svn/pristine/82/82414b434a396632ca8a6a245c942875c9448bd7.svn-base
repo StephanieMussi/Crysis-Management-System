@@ -1,0 +1,24 @@
+<?php
+	class cmo_notSevereCase { 
+		//attributes
+    	protected $incidentId;
+        protected $cmo_username;
+    
+    	//getter and setter methods
+    	public function getIncidentId(){
+    		return $this->incidentId;
+    	}
+
+   	 	public function setIncidentId($incidentId){ 
+        	 $this->incidentId = $incidentId;
+    	}
+
+        public function getCmoUsername(){
+            return $this->cmo_username;
+        }
+
+        public function setCmoUsername($cmo_username){ 
+             $this->cmo_username = $cmo_username;
+        }
+	} 
+?>

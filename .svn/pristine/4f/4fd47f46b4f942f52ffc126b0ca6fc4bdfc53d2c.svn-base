@@ -1,0 +1,57 @@
+<?php
+	if(isset($_POST['btn_submit'])){
+		include('../classes/severeCaseController.php');
+		include('../classes/notificationController.php');
+		include('../classes/severeCaseNotificationController.php');
+		
+		$severeCase = new severeCase();
+
+		$severeCase->setIncidentId($_POST['incidentId']);
+		$severeCase->setSuggestionOnAction($_POST['suggestionOnAction']);
+		$severeCase->setSeverityLevel($_POST['severityLevel']);
+
+		session_start();
+		$username = $_SESSION['username'];
+		$severeCase->setCmoUsername($username);
+		
+		$severeCaseController = new severeCaseController();
+
+		$result = $severeCaseController->insertDetails($severeCase);
+
+		if($result == "sqlError"){
+			header("Location: ../cmo/cmo_send_request.php?error=sqlError&incidentId=".$severeCase->getIncidentId()."&suggestionOnAction=".$severeCase->getSuggestionOnAction()."&severityLevel=".$severeCase->getSeverityLevel());
+			exit();
+		}
+		
+		else if($result == 'insertError'){ //insertError
+			header("Location: ../cmo/cmo_send_request.php?error=insertError&incidentId=".$severeCase->getIncidentId()."&suggestionOnAction=".$severeCase->getSuggestionOnAction()."&severityLevel=".$severeCase->getSeverityLevel());
+			exit();
+		}
+
+		else{ //insert success
+			//only when insertion is successful, notification obj will be created
+			$notification = new notification();
+			$notification->setType('severeCaseNotification');
+			$notification->setMsg('A severe case has been filed');
+			$notification->setTarget('pmo');
+			
+			$notificationController = new notificationController();
+			$result = $notificationController->insertDetails($notification);
+			echo ($result);
+			
+			//create severeCaseNotification obj
+			$severeCaseNotification = new severeCaseNotification();
+			$severeCaseNotification->setIncidentId($_POST['incidentId']);
+			$severeCaseNotification->setNotificationId($result);
+
+			$severeCaseNotificationController = new severeCaseNotificationController();
+			$severeCaseNotificationController->insertDetails($severeCaseNotification);
+
+			header("Location: ../cmo/cmo_view_incident_list.php?result=success");
+			exit();
+		}
+	}
+	else{
+		header("Location: ../cmo/cmo_view_incident_list.php");
+	}
+?>

@@ -1,0 +1,135 @@
+<?php
+	include('notification.php');
+	class notificationController{
+		//other methods
+		public function getAllNotification(){
+			//query to get all notification
+			include('../script/dbh.php');
+
+            $sql = "SELECT * FROM notification;";
+		
+			//run query
+			$result = mysqli_query($conn, $sql);
+	
+			//stores number of rows in results
+			$resultCheck = mysqli_num_rows($result);
+	
+			$notificationArray = array();
+
+			$m = 0;
+
+			if($resultCheck > 0){
+				while($rows = mysqli_fetch_row($result)){
+				/* From notification db table
+				0: notificationId, 1: type, 2: notificationDateTime, 3: msg, 4: target*/
+					$notificationArray[$m] = array();
+					for($i=0; $i< 5; $i++){
+						$notificationArray[$m][$i] = $rows[$i];
+					}
+					$m++;
+				}
+			}
+			
+			return $notificationArray; //returns array
+		}
+
+		public function getCmoNotification(){
+			include('../script/dbh.php');
+           	
+            $sql = "SELECT * FROM notification WHERE target='cmo';";
+        
+            //run query
+			$result = mysqli_query($conn, $sql);
+	
+			//stores number of rows in results
+			$resultCheck = mysqli_num_rows($result);
+
+			$cmoNotificationArray = array();
+			$m = 0;
+	
+			if($resultCheck > 0){
+				while($rows = mysqli_fetch_row($result)){
+				/* From notification db table
+				0: notificationId, 1: type, 2: notificationDateTime, 3: msg, 4: target*/
+					$cmoNotificationArray[$m] = array();
+					for($i=0; $i< 5; $i++){
+						$cmoNotificationArray[$m][$i] = $rows[$i];
+					}
+					$m++;
+				}
+			}
+			return $cmoNotificationArray; //returns array
+		}
+
+		public function getPmoNotification(){
+			include('../script/dbh.php');
+           	
+            $sql = "SELECT * FROM notification WHERE target='pmo';";
+        
+            //run query
+			$result = mysqli_query($conn, $sql);
+	
+			//stores number of rows in results
+			$resultCheck = mysqli_num_rows($result);
+
+			$pmoNotificationArray = array();
+			$m = 0;
+	
+			if($resultCheck > 0){
+				while($rows = mysqli_fetch_row($result)){
+				/* From notification db table
+				0: notificationId, 1: type, 2: notificationDateTime, 3: msg, 4: target*/
+					$pmoNotificationArray[$m] = array();
+					for($i=0; $i< 5; $i++){
+						$pmoNotificationArray[$m][$i] = $rows[$i];
+					}
+					$m++;
+				}
+			}
+			return $pmoNotificationArray; //returns array
+		}
+
+		public function deleteNotification($notificationId){ //when notification has been read
+			include('../script/dbh.php');
+
+    		//query to delete record from notification db
+    		$sql = "DELETE FROM notification WHERE notificationId = ?";
+			
+			$stmt = mysqli_stmt_init($conn);
+			if(!mysqli_stmt_prepare($stmt,$sql)){
+				return "sqlError";
+			}
+	
+			mysqli_stmt_bind_param($stmt, "s", $notificationId);
+			
+			$result = mysqli_stmt_execute($stmt);
+			if($result == true){ //insert success
+				return "success";
+			}
+			else{
+				return "deleteError";
+			}
+		}
+
+		public function insertDetails($notification){ //pass notification obj
+    		include('../script/dbh.php');
+    		//query to insert record into notification db
+    		$sql = "INSERT INTO notification(type, msg, target) VALUES(?,?,?)";
+			
+			$stmt = mysqli_stmt_init($conn);
+			if(!mysqli_stmt_prepare($stmt,$sql)){
+				return "sqlError";
+			}
+	
+			mysqli_stmt_bind_param($stmt, "sss", $notification->getType(), $notification->getMsg(), $notification->getTarget());
+			
+			$result = mysqli_stmt_execute($stmt);
+			if($result == true){ //insert success
+				return mysqli_insert_id($conn);
+			}
+			else{
+				return "insertError";
+			}
+    	} 
+	}
+?>

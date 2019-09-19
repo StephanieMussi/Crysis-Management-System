@@ -1,0 +1,21 @@
+<?php
+	class severeCaseNotification{
+		//attributes
+		protected $notificationId;
+		protected $incidentId;
+
+		//getter and setter methods
+		public function getNotificationId(){
+			return $this->notificationId;
+		}
+		public function setNotificationId($notificationId){
+			$this->notificationId = $notificationId;
+		}
+		public function getIncidentId(){
+			return $this->incidentId;
+		}
+		public function setIncidentId($incidentId){
+			$this->incidentId = $incidentId;
+		}
+	}
+?>

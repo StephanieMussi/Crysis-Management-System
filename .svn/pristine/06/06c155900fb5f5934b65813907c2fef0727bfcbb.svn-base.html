@@ -1,0 +1,86 @@
+<html>
+<?php include('../classes/notificationController.php'); ?>
+	<body>
+		<!----------Top Navigation Bar-------->
+		<section id = "nav-bar">
+			<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+				<a class="navbar-brand" href="pmo_main.php">Unknown Crysis</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+
+				<!--------Notification---------->
+				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+					<div class="navbar-nav mr-auto">
+						<ul class="navbar-nav mr-auto">
+							<li class="nav-item dropdown">
+								<?php
+									$notificationControllerObj = unserialize($_SESSION['notificationControllerObj']);
+									$pmoNotificationArray = $notificationControllerObj->getPmoNotification(); 
+									$size = sizeof($pmoNotificationArray);
+								?>
+ 								<a class="nav-link" href="" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Notification
+ 									<?php if($size > 0){ ?>
+ 											<span class="badge badge-light"><?php echo($size); ?></span>
+ 									<?php } ?>
+ 										
+ 								</a>
+ 								<div class="dropdown-menu" href= "" aria-labelledby="dropdownMenu01">
+ 								<?php 
+ 									if($size == 0){
+ 								?>
+    									<a class="dropdown-item" href="#">
+    										<!------Dropdown Notification------>
+   											<i>No new notification</i>
+   										</a>
+ 								<?php } ?>
+
+    							<?php
+									if($size > 0){
+								?>
+    									<?php
+    										for($m=0; $m< sizeof($pmoNotificationArray); $m++){
+    											/* From notification db table
+												0: notificationId, 1: type, 2: notificationDateTime, 3: msg, 4: target*/
+ 												if($pmoNotificationArray[$m][1] == 'severeCaseNotification'){
+ 										?>
+ 													<button class="dropdown-item" onclick = 'getSevereCaseNotification(<?php echo($pmoNotificationArray[$m][0])?>)'>
+    													<!------Dropdown Notification------>
+   														<small><i><?php echo($pmoNotificationArray[$m][2]) ?></i></small><br/>
+   														<?php echo($pmoNotificationArray[$m][3]) ?>
+   													</button>
+ 											<?php	
+ 												}
+ 												else{ //TODO: if notification is reportNotification
+ 											?>
+ 													<a class="dropdown-item" href="#">
+    													<!------Dropdown Notification------>
+   														<small><i><?php echo($pmoNotificationArray[$m][2]) ?></i></small><br/>
+   														<?php echo($pmoNotificationArray[$m][3]) ?>
+   													</a>
+ 											<?php
+ 												}
+ 											?>
+    											<div class="dropdown-divider"></div>
+    										<?php } ?>
+								<?php } ?>
+							</li>
+						<ul>
+					</div>
+				<!--------Logout---------->
+					<div class="navbar-nav ml-auto">
+						<a class="nav-item nav-link" href="..\script\logout.php">Logout</a>
+					</div>
+				</div>
+			</nav>
+		</section>
+	</body>
+</html>
+
+<script>
+function getSevereCaseNotification(notificationId){
+	url = "view_severe_case_notification.php?view=true&notificationId="+notificationId;
+	window.location.assign(url);
+}
+</script>

@@ -1,0 +1,73 @@
+<html>
+<head>
+	<?php include('../classes/agency/agency_incidentController.php'); ?>
+	
+	<!----------Header----------->
+	<?php include('agency_header.php');?>
+</head>
+<body>
+	<!----------Top Navigation Bar-------->
+	<?php include('agency_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('agency_side_nav_bar.php');?>
+	
+	<!-----Fixed content for view incident page------->
+	<?php include('agency_view_incident_list_header.php');?>
+	
+	<!------------Incident table--------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-12">	
+	<table class="table" id="table">
+		<thead class="thead-light">
+			<tr>
+				<th scope="col" >ID</th>
+				<th scope="col" >Name</th>
+				<th scope="col" >Mobile No.</th>
+				<th scope="col" >Location</th>
+				<th scope="col" >Emergency Type</th>
+				<th scope="col" >Assistance Type</th>
+				<th scope="col" width="20%">Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+				$incidentController = new agency_incidentController();
+				$emergencyType = "Traffic Accident";
+				$allIncidentArray = $incidentController->getAllIncidentsByEmergencyType($emergencyType);
+				/* From incident db table
+				0: incidentId, 1: name, 2: mobileNo, 3: location, 4: emergencyType, 5: typeOfAssistance, 6: remarks, 7: fileDateTime, 8: cco_username, 9: status, 10:statusDateTime
+				*/	
+				for($m=0; $m< sizeof($allIncidentArray); $m++){
+			?>
+						<tr>
+							<th scope="row"><?php echo $allIncidentArray[$m][0]; ?></th>
+							<td><?php echo $allIncidentArray[$m][1]; ?></td>
+							<td><?php echo $allIncidentArray[$m][2]; ?></td>
+							<td><?php echo $allIncidentArray[$m][3]; ?></td>
+							<td><?php echo $allIncidentArray[$m][4]; ?></td>
+							<td><?php echo $allIncidentArray[$m][5]; ?></td>
+							<!----------List of Actions----------->
+							<td><a href="agency_view_incident_details.php?viewMore=true&incidentId=<?php echo($allIncidentArray[$m][0]) ?>" class="btn btn-info" >View More</a> &nbsp
+							<a href="agency_update_incident_status.php?incidentId=<?php echo $allIncidentArray[$m][0];?>" class="btn btn-warning"  >Update</a>
+							</td>
+						</tr>
+						<?php
+				}
+			?>
+		</tbody>
+	</table>
+	</div>
+	</div>
+	</div>
+	</div>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+	
+</body>
+</html>

@@ -1,0 +1,32 @@
+<?php
+	include('../classes/cmo/cmo_notSevereCaseController.php');
+
+	if($_GET['confirmAccept'] != "true"){
+		header("Location: cmo_view_incident_list.php");
+		exit();
+	}
+
+	session_start();
+	$cmo_username = $_SESSION['username'];
+	$incidentId = $_GET['incidentId'];
+
+	$notSevereCase = new cmo_notSevereCase();
+	$notSevereCase->setCmoUsername($cmo_username);
+	$notSevereCase->setIncidentId($incidentId);
+
+	$notSevereCaseController = new cmo_notSevereCaseController();
+	$result = $notSevereCaseController->insertDetails($notSevereCase);
+
+	if($result == 'success'){
+		header("Location: ../cmo/cmo_view_incident_list.php?result=successfulInsertForNotSevere&incidentId=".$incidentId);
+		exit();
+	}
+	else if($result == 'sqlError'){
+		header("Location: ../cmo/cmo_send_request_mark_not_severe.php?error=sqlError&incidentId=".$incidentId);
+		exit();
+	}
+	else{
+		header("Location: ../cmo/cmo_send_request_mark_not_severe?error=insertError&incidentId=".$incidentId);
+		exit();
+	}
+?>

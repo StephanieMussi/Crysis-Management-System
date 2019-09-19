@@ -1,0 +1,36 @@
+<html>
+<body>
+	<!----------------View Incident List-------------->
+	<div class = "main-content">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-12">
+		<h3 class="label">Incident List</h3>
+		<!--------Table Filter----------->
+		<center>
+			<a href="cmo_view_incident_list.php" class="btn btn-outline-success">All</a>
+			<a href="cmo_view_incident_list_send_request.php" class="btn btn-outline-warning">Send Request to PMO</a>
+			<a href="cmo_view_incident_list_view_request_sent.php" class="btn btn-outline-info">View Request Sent</a>
+			<a href="cmo_view_incident_list_view_pmo_response.php" class="btn btn-outline-danger">View PMO Response</a>
+		</center>
+		<?php
+			if(isset($_GET['result'])){
+				if($_GET['result'] == 'success'){
+					echo '<p class="resultSuccess" style="color:green">Request has been submitted successfully.</p>';
+				}
+			}
+			else if(isset($_GET['error'])){
+				if($_GET['error'] == 'sqlError'){
+					echo '<p class="sqlError" style="color:red">Database connection error. Please try again later</p>';
+				}
+				else if($_GET['error'] == 'viewSentRequestError'){
+					echo '<p class="viewSentRequestError" style="color:red">Database execution error. Please try again later</p>';
+				}
+			}
+		?>
+	</div>
+	</div>
+	</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?php
+	class location { 
+		//attributes
+    	protected $incidentId;
+    	protected $latitude; 
+    	protected $longitude;
+    
+    	//getter and setter methods
+    	public function getIncidentId(){
+    		return $this->incidentId;
+    	}
+
+   	 	public function setIncidentId($incidentId){ 
+        	 $this->incidentId = $incidentId;
+    	}
+
+    	public function getLatitude(){
+    		return $this->latitude;
+    	}
+
+   	 	public function setLatitude($latitude){ 
+        	 $this->latitude = $latitude;
+    	}
+
+    	public function getLongitude(){
+    		return $this->longitude;
+    	}
+
+   	 	public function setLongitude($longitude){ 
+        	 $this->longitude = $longitude;
+    	}
+	} 
+?>

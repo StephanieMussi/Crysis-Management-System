@@ -1,0 +1,42 @@
+#header {
+	font-size: 2em;
+	font-weight: bold;
+}
+/* Default text style (dts) */
+.dts {
+	width: 80%;
+	text-align: center;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+/* Always set the map height explicitly to define the size of the div
+* element that contains the map. */
+#map {
+width: 50%;
+height: 50%;
+margin-left: 25%;
+margin-right: 25%;
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+height: 100%;
+margin: 0;
+padding: 0;
+}
+
+.firstHeading {
+	color:rgb(94, 128, 231);
+	font-size: 16px;
+	margin: 5px 0px;
+}
+
+.firstHazeHeading {
+	color:rgb(71, 76, 90);
+	font-size: 16px;
+	margin: 5px 0px;
+}
+
+.bodyHazeContent {
+	color:rgb(111, 118, 138);
+	font-size: 14px;
+}

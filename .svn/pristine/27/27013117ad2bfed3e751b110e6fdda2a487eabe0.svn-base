@@ -1,0 +1,149 @@
+*
+{
+	margin: 0;
+	padding: 0;
+}
+body
+{
+	font-family: sans-serif;
+}
+#nav-bar{
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.form-group{
+	margin-top: 10px;
+}
+.label{
+	margin-top: 20px;
+}
+.form-group-check
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.mt-auto, .my-auto {
+    margin-top: auto;
+}
+.pb-3, .py-3 {
+    padding-bottom: 1rem;
+}
+#name_error, #mobile_no_error, #location_error, #tnc_error, #others_error
+{
+	color: #FF0000;
+}
+#emergency_others
+{
+	margin-top: 10px;
+}
+.confirm_label{
+  font-weight: bold;
+}
+.rightmost{
+  float: right;
+}
+
+
+
+/* The sidebar menu */
+.sidenav {
+  height: 100%; /* Full-height: remove this if you want "auto" height */
+  width: 220px; /* Set the width of the sidebar */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1; /* Stay on top */
+  left: 0;
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 20px;
+  border-right: 1px solid; 
+  border-right-color: #D0D3D4;
+}
+
+/* The navigation menu links */
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  color: #000000;
+  display: block;
+  margin: 5px;
+}
+
+/* The icons */
+.sidenav i {
+	width: 10px;
+  margin-right: 10px;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #979A9A;
+  text-decoration: none;
+}
+
+/* Style page content */
+.main-content {
+  margin-left: 220px; /* Same as the width of the sidebar */
+  margin-top: 20px;
+  padding: 0px 10px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+
+
+/*All the styles after this comment belongs to the map for file incident page*/
+#map {
+        height: 100%;
+    }
+.controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 0px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 300px;
+}
+
+#pac-input:focus {
+    border-color: #4d90fe;
+}
+
+.pac-container {
+    font-family: Roboto;
+}
+
+#type-selector {
+    color: #fff;
+    background-color: #4d90fe;
+    padding: 5px 11px 0px 11px;
+}
+
+#type-selector label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+}
+	

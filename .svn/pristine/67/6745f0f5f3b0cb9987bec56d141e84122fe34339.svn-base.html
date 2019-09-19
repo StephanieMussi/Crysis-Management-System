@@ -1,0 +1,402 @@
+<html>
+<head>
+	<!----------Header----------->
+	<?php include('cco_header.php');?>
+</head>
+<body onload="fillFunction()">
+	<!------------------------Navigation bar-------------------->
+	<!----------Top Navigation Bar-------->
+	<?php include('cco_top_nav_bar.php');?>
+
+	<!----------Side Navigation Bar-------->
+	<?php include('cco_side_nav_bar.php');?>
+	
+	<!------------------------Form------------------------->
+	<section>
+	<div class = "main-content">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-6">
+	<h3 class="label">File an Incident</h3>
+	<form name="form" method="post" action="..\script\confirm_incident.php" onsubmit="return validateForm()">
+		<div class="form-group">
+			<label for="name">Name</label>
+			<input type="text" class="form-control" id="name" placeholder="" name = "name" onchange="verifyName()">
+			<div id="name_error"></div>
+		</div>
+		<div class="form-group">
+			<label for="mobileNo">Mobile Number</label>
+			<div class="form-row">
+    			<div class="col-sm-3">
+      				<input type="text" class="form-control" placeholder="+65" readonly>
+    			</div>
+    			<div class="col">
+      				<input type="text" class="form-control" placeholder="e.g.: 98765432" id="mobileNo" name="mobileNo" onchange="verifyMobileNo()">
+    			</div>
+    		</div>
+    		<div id="mobile_no_error"></div>
+  		</div>
+		<div class="form-group">
+        	<label for="location">Location</label>
+        	<div class="row">
+                <div class="col col-lg-6">
+                    <input id="pac-input" name="location" class="controls" type="text" placeholder="Enter a location">
+                    <div id="map1" style="height: 300px;width: 540px"></div>
+                    <br>
+                    <input type="hidden" name="lat" id="lat">
+                    <input type="hidden" name="lng" id="lng">
+                    <input type="hidden" name="checker" id="checker">
+                </div>
+			</div>
+			<div id="location_error"></div>
+    	</div>
+		<div class="form-group">
+			<label for="emergency_type">Types of Emergency</label><br/>
+			<select id="emergency_type" name = "emergencyType" onchange="emergencyOthers()">
+				<option value="Fire">Fire</option>
+				<option value="Gas Leak">Gas Leak</option>
+				<option value="Terrorist Attack">Terrorist Attack</option>
+				<option value="Traffic Accident">Traffic Accident</option>
+				<option value="Natural Disaster">Natural Disaster</option>
+				<option value="Others">Others</option>
+			</select>
+			<div id="emergency_others"><input type="text" class="form-control" id="others_option" name = "others_option" placeholder="Specify type of emergency" disabled="disabled" onchange="verifyOthers()"></div>
+			<div id="others_error"></div>
+		</div>
+		<div class="form-group">
+			<label for="assistanceType">Type of Assistance</label><br/>
+			<select id="assistanceType" name = "assistanceType">
+				<option value="Emergency Ambulance">Emergency Ambulance</option>
+				<option value="Rescue and Evacuation">Rescue & Evacuation</option>
+				<option value="Fire-Fighting">Fire-Fighting</option>
+				<option value="Gas Leak Control">Gas Leak Control</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="remarks">Remarks</label>
+			<textarea type="text" class="form-control" id="remarks" name = "remarks" placeholder="e.g.: which level and unit number"></textarea>
+		</div>
+		<div class="form-group-check">
+			<input type="checkbox" class="form-check-input" id="tnc" onchange="verifyTnc()">
+			<label class="form-check-label" for="tnc">I confirm that the information given in this form is true, complete and accurate</label>
+			<div id="tnc_error"></div>
+		</div>
+		<button type="button" class="btn btn-light" onclick = "cancel()">Cancel</button>
+		<button type="submit" name="btn_submit" class="btn btn-primary float-right">Submit</button>
+	</form>
+	</div>
+	</div>
+	</div>
+	</div>
+	</section>
+	
+	<!----------Footer----------->
+	<div class = "main-content">
+		<?php include('../includes/footer.php');?>
+	</div>
+</body>
+</html>
+
+<!------------------Javascript form validation------------------>
+<script>
+//validate name on change
+function verifyName(){
+	var name = document.getElementById('name');
+	var name_error = document.getElementById('name_error');
+	if(name.value != ""){
+		name.blur();
+		name_error.innerHTML = "";
+		return true;
+	}
+}
+
+function verifyMobileNo(){
+	var mobileNo = document.getElementById('mobileNo');
+	var mobile_no_error = document.getElementById('mobile_no_error');
+	var regex = new RegExp("(8|9)[0-9]{7}");
+
+	if(mobileNo.value != "" || regex.test(mobileNo.value) == true){
+		mobileNo.blur();
+		mobile_no_error.innerHTML = "";
+		return true;
+	}
+}
+
+//validate location on change
+function verifyLocation(){
+	var location = document.getElementById('pac-input');
+	var location_error = document.getElementById('location_error');
+	var checker = document.getElementById('checker');
+	if(location.value != "" || checker.value == 1){
+		location.blur();
+		location_error.innerHTML = "";
+		return true;
+	}
+}
+
+//validate tnc on change
+function verifyTnc(){
+	var tnc = document.getElementById('tnc');
+	var tnc_error = document.getElementById('tnc_error');
+	if(tnc.checked == true){
+		tnc.blur();
+		tnc_error.innerHTML = "";
+		return true;
+	}
+}
+
+//validate others for emergency type
+function verifyOthers(){
+	var others_option = document.getElementById('others_option');
+	var others_error = document.getElementById('others_error');
+	if(others_option.disabled == true || others_option.value != ""){ //i.e.: if textbox is disabled or if the field is not empty
+		others_option.blur();
+		others_error.innerHTML = "";
+		return true;
+	}
+}
+
+//validate entire form
+function validateForm(){
+	// initialize input elements
+	var name = document.getElementById('name');
+	var mobileNo = document.getElementById('mobileNo');
+	var location = document.getElementById('pac-input');
+	var checker = document.getElementById('checker');
+	var tnc = document.getElementById('tnc');
+	var others_option = document.getElementById('others_option');
+	
+	// initialize elements for error msges
+	var name_error = document.getElementById('name_error');
+	var mobile_no_error = document.getElementById('mobile_no_error');
+	var location_error = document.getElementById('location_error');
+	var tnc_error = document.getElementById('tnc_error');
+	var others_error = document.getElementById('others_error');
+
+	var regex = new RegExp("(8|9)[0-9]{7}");
+
+	//validate name
+	if(name.value == ""){
+		name_error.textContent = "Please enter a name";
+		name.focus();
+		name.select();
+		return false;
+	}
+	
+	//validate mobileNo
+	if(mobileNo.value == ""){
+		mobile_no_error.textContent = "Please enter a mobile number";
+		mobileNo.focus();
+		mobileNo.select();
+		return false;
+	}
+	else if(regex.test(mobileNo.value) == false){
+		mobile_no_error.textContent = "Please enter a valid singapore mobile number";
+		mobileNo.focus();
+		mobileNo.select();
+		return false;
+	}
+
+	//validate location
+	if(location.value == "" || checker.value == 0){
+		location_error.textContent = "Please enter a valid location";
+		location.focus();
+		location.select();
+		return false;
+	}
+	
+	//validate others in emergency type
+	if(others_option.disabled == false && others_option.value == ""){ //i.e.: if textbox is enabled
+		others_error.textContent = "Please specify emergency type";
+		others_option.focus();
+		others_option.select();
+		return false;
+	}
+	
+	//validate tnc
+	if(tnc.checked == false){
+		tnc_error.textContent = "You have to agree to the terms to proceed";
+		tnc.focus();
+		tnc.select();
+		return false;
+	}
+	
+	return true;
+}
+
+//when 'others' is clicked in the ddl for emergency type
+function emergencyOthers(){
+	var emergency_type = document.getElementById('emergency_type');
+	var others_option = document.getElementById('others_option');
+	if(emergency_type.options[emergency_type.selectedIndex].value == "Others"){
+		others_option.disabled = false;
+	}
+	else{
+		others_option.disabled = true;
+		others_error.innerHTML = "";
+	}
+}
+
+//when cancel button is clicked
+function cancel(){
+	//set all elements to default state
+	document.getElementById('name').value = '';
+	document.getElementById('mobileNo').value = '';
+	document.getElementById('pac-input').value = '';
+	document.getElementById('checker').value = 0;
+	document.getElementById('assistanceType').value = 'Emergency Ambulance';
+	document.getElementById('tnc').checked = false;
+	document.getElementById('emergency_type').value = 'Fire';
+	document.getElementById('others_option').value = '';
+	document.getElementById('remarks').value = '';
+	
+	//remove all error msges
+	document.getElementById('name_error').innerHTML = '';
+	document.getElementById('mobile_no_error').innerHTML = '';
+	document.getElementById('location_error').innerHTML = '';
+	document.getElementById('tnc_error').innerHTML = '';
+	document.getElementById('others_option').disabled = true;
+}
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&]*)|&|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+//fill in label with values based on querystring passed
+function fillFunction(){
+	
+	if(getParameterByName('edit') == 'true'){
+		//name
+		var name = document.getElementById('name');
+		name.value = getParameterByName('name');
+	
+		//mobileNo
+		var mobileNo = document.getElementById('mobileNo');
+		mobileNo.value = getParameterByName('mobileNo');
+	
+		//location
+		var location = document.getElementById('pac-input');
+		location.value = getParameterByName('location');
+	
+		//emergencyType
+		var emergencyType = document.getElementById('emergency_type');
+		emergencyType.value = getParameterByName('emergencyType');
+		var others_option = document.getElementById('others_option');
+		if(getParameterByName('emergencyType') == 'Others'){
+			others_option.disabled = false;
+			others_option.value = getParameterByName('others');
+		}
+	
+		//assistanceType
+		var assistanceType = document.getElementById('assistanceType');
+		assistanceType.value = getParameterByName('assistanceType');
+
+		//remarks
+		var remarks = document.getElementById('remarks');
+		remarks.value = getParameterByName('remarks');
+		if(getParameterByName('remarks') == 'nil'){
+			remarks.value = "";
+		}
+	}
+}
+</script>
+
+<script>
+    // This example requires the Places library. Include the libraries=places
+    // parameter when you first load the API. For example:
+    //<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApu0QWQ7bZ3ifuH1t6jMJFctHWvG1ey6o&libraries=places">
+
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map1'), {
+            center: {
+                lat: 1.368941, lng: 103.798860},
+            zoom: 11
+        });
+        var input = document.getElementById('pac-input');
+
+        var types = document.getElementById('type-selector');
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(types);
+
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', map);
+
+        // Set initial restrict to the greater list of countries.
+        autocomplete.setComponentRestrictions(
+            {'country': ['sg']});
+
+        var infowindow = new google.maps.InfoWindow();
+        var marker = new google.maps.Marker({
+            map: map,
+            anchorPoint: new google.maps.Point(0, -29)
+        });
+
+        var checker = document.getElementById('checker');
+        var lat = document.getElementById('lat');
+        var lng = document.getElementById('lng');
+        
+        autocomplete.addListener('place_changed', function() {
+            infowindow.close();
+            marker.setVisible(false);
+            var place = autocomplete.getPlace();
+
+            if (!place.geometry) {
+                // User entered the name of a Place that was not suggested and
+                // pressed the Enter key, or the Place Details request failed.
+                window.alert("No details available for input: '" + place.name + "'");
+                checker.value = 0;
+                return;
+            }
+
+            // If the place has a geometry, then present it on a map.
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);  // Why 17? Because it looks good.
+            }
+            marker.setIcon(/** @type {google.maps.Icon} */({
+                url: place.icon,
+                size: new google.maps.Size(71, 71),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(17, 34),
+                scaledSize: new google.maps.Size(35, 35)
+            }));
+            marker.setPosition(place.geometry.location);
+            marker.setVisible(true);
+            var item_Lat =place.geometry.location.lat()
+            var item_Lng= place.geometry.location.lng()
+            var item_Location = place.formatted_address;
+
+            //ALERT TO DISPLAY LAT LONG
+            alert("Lat= "+item_Lat+"_____Lang="+item_Lng+"_____Location="+item_Location);
+            $("#lat").val(item_Lat);
+            $("#lng").val(item_Lng);
+            $("#location").val(item_Location + "_" + item_Lat + "_" + item_Lng);
+            var address = '';
+            if (place.address_components) {
+                address = [
+                    (place.address_components[0] && place.address_components[0].short_name || ''),
+                    (place.address_components[1] && place.address_components[1].short_name || ''),
+                    (place.address_components[2] && place.address_components[2].short_name || '')
+                ].join(' ');
+            }
+
+            checker.value = 1;
+           	lat.value = item_Lat;
+            lng.value = item_Lng;
+            verifyLocation();
+
+            infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+            infowindow.open(map, marker);
+        });
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApu0QWQ7bZ3ifuH1t6jMJFctHWvG1ey6o&libraries=places&callback=initMap" async defer></script>

@@ -1,0 +1,37 @@
+<?php
+	include('../classes/severeCaseController.php');
+	
+	if($_GET['confirmReject'] != "true"){
+		header("Location: pmo_approve_incident.php");
+		exit();
+	}
+
+	session_start();
+	$pmo_username = $_SESSION['username'];
+	$incidentId = $_GET['incidentId'];
+
+	//get the proposed suggestion from confirmReject page:
+	$proposedSuggestion = $_GET['proposedSuggestion'];
+	
+	$severeCase = new severeCase();
+	$severeCase->setPmoUsername($pmo_username);
+	$severeCase->setIncidentId($incidentId);
+	//add the pmo proposed suggestion to the db
+	$severeCase->setProposedSuggestion($proposedSuggestion);
+
+	$severeCaseController = new severeCaseController();
+	$result = $severeCaseController->updatePmoReject($severeCase);
+
+	if($result == 'success'){
+		header("Location: ../pmo/pmo_approve_incident_list.php?result=success&incidentId=".$incidentId);
+		exit();
+	}
+	else if($result == 'sqlError'){
+		header("Location: ../pmo/pmo_view_more_info.php?error=sqlError&incidentId=".$incidentId);
+		exit();
+	}
+	else{
+		header("Location: ../pmo/pmo_view_more_info.php?error=insertError&incidentId=".$incidentId);
+		exit();
+	}
+?>

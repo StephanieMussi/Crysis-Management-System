@@ -1,0 +1,42 @@
+<?php
+	class cmo_dispatch { 
+		//attributes
+    	protected $cmo_username;
+    	protected $incidentId; 
+    	protected $dispatchMsg;
+    	protected $dispatchDateTime;
+    
+    	//getter and setter methods
+    	public function getCmoUsername(){
+            return $this->cmo_username;
+        }
+
+        public function setCmoUsername($cmo_username){ 
+             $this->cmo_username = $cmo_username;
+        }
+
+        public function getIncidentId(){
+    		return $this->incidentId;
+    	}
+
+   	 	public function setIncidentId($incidentId){ 
+        	 $this->incidentId = $incidentId;
+    	}
+
+        public function getDispatchMsg(){
+            return $this->dispatchMsg;
+        }
+
+        public function setDispatchMsg($dispatchMsg){ 
+             $this->dispatchMsg = $dispatchMsg;
+        }
+
+        public function getDispatchDateTime(){
+            return $this->dispatchDateTime;
+        }
+
+        public function setDispatchDateTime($dispatchDateTime){ 
+             $this->dispatchDateTime = $dispatchDateTime;
+        }
+    }
+?>

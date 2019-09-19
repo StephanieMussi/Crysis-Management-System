@@ -1,0 +1,58 @@
+<?php
+	if(isset($_POST['btn_submit'])){
+		include('../classes/cmo/cmo_severeCaseController.php');
+		include('../classes/pmo/pmo_severeCaseController.php');
+		include('../classes/pmo/pmo_incidentController.php');
+		include('../classes/cmo/cmo_incidentController.php');
+		include('../classes/pmo/pmo_locationController.php');
+		include('../classes/cmo/cmo_locationController.php');
+		
+		$cmo_severeCase = new cmo_severeCase();
+
+		$cmo_severeCase->setIncidentId($_POST['incidentId']);
+		$cmo_severeCase->setSuggestionOnAction($_POST['suggestionOnAction']);
+		$cmo_severeCase->setSeverityLevel($_POST['severityLevel']);
+
+		session_start();
+		$username = $_SESSION['username'];
+		$cmo_severeCase->setCmoUsername($username);
+		
+		$cmo_severeCaseController = new cmo_severeCaseController();
+
+		$result = $cmo_severeCaseController->insertDetails($cmo_severeCase);
+
+		if($result == "sqlError"){
+			header("Location: ../cmo/cmo_send_request.php?error=sqlError&incidentId=".$cmo_severeCase->getIncidentId()."&suggestionOnAction=".$cmo_severeCase->getSuggestionOnAction()."&severityLevel=".$cmo_severeCase->getSeverityLevel());
+			exit();
+		}
+		
+		else if($result == 'insertError'){ //insertError
+			header("Location: ../cmo/cmo_send_request.php?error=insertError&incidentId=".$cmo_severeCase->getIncidentId()."&suggestionOnAction=".$cmo_severeCase->getSuggestionOnAction()."&severityLevel=".$cmo_severeCase->getSeverityLevel());
+			exit();
+		}
+
+		else{ //insert success
+			//insert the severe case into pmo db
+			//1st, retrieve the incident info of this severe case to be inserted into the pmo incident db
+			$pmo_incidentController = new pmo_incidentController();
+			$cmo_incidentController = new cmo_incidentController();
+			$incidentObj = $cmo_incidentController->getSpecificIncident($_POST['incidentId']);
+			$pmo_incidentController->insertDetails($incidentObj);
+
+			//2nd, insert into pmo location db
+			$cmo_locationController = new cmo_locationController();
+			$pmo_locationController = new pmo_locationController();
+			$locationObj = $cmo_locationController->getSpecificIncidentLatLng($_POST['incidentId']);
+			$pmo_locationController->insertDetails($locationObj);
+
+			//3rd, insert pmo severe case db
+			$pmo_severeCaseController = new pmo_severeCaseController();
+			$pmo_severeCaseController->insertDetails($cmo_severeCase);
+			header("Location: ../cmo/cmo_view_incident_list.php?result=success");
+			exit();
+		}
+	}
+	else{
+		header("Location: ../cmo/cmo_view_incident_list.php");
+	}
+?>
